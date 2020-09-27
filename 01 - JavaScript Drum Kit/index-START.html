@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>JS Drum Kit</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-
+  <!-- Ex. "65" is the key code for "a" on the keyboard. To get the keyCode, use: http://keycode.info/
+  Note: 'data-key' is not a standard attribute, but it was created and used here to hook up with the 'data-key' <audio> down below.
+  So when someone hits a key, it's going to find the corresponding audio element below and play it. -->
   <div class="keys">
     <div data-key="65" class="key">
       <kbd>A</kbd>
@@ -57,10 +61,80 @@
   <audio data-key="75" src="sounds/tom.wav"></audio>
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
-<script>
+  <script>
 
-</script>
+    // Listen for a keyup event.
+    // First, we get whatever element we're listening for (in our case 'window', but we can also listen on the input, div, or a text, etc.),
+    // then we add an event listener. And the event we're listening for is called 'keydown'.
+    // And then we have a function, which will give us the event.
+    // So we're going to listen for the 'keydown' event.
+    // And when that happens, we're going to run this function, which will give us the event.
+
+    // For now we'll just console log that event: console.log(e) (so now when we hit a key, we'll get it's keyCode, and other information, in the console;
+    // but for use, we're mostly concerned with the keyCode).
+    // And now if we do 'console.log(e.keyCode)' and hit a key, we'll just get the keyCode, which is what we want.
+
+    // Now we need to say, is there an audio element on the page that has a 'data-key' of 65, for example.
+    // And we're going to use 'query.selector', because we're only looking for on (if we were looking for many, we'd say 'querySelectorAll').
+    // Then we're going to select an 'audio' element.
+    // But we want to select it where it has a 'data-key' (note 'audio' has no class), so we can use an attribute selector: [data-key=65].
+    // But instead of hardcoding 65, for example, we're going to use a variable that lives inside of this event.
+    // So we're going to use a TEMPLATE LITERAL and an ES6 TEMPLATE STRING (${...}) with '${e.keyCode}'.
+    // Then we can console.log 'audio' to see if we've actually selected an audio element.
+    // Then we get the corresponding audio in he console. But if we hit another key, like spacebar, we get null - so not all keys have audio.
+    // So we need to do an if statement to stop the function from running, since not all keys have audio.
+    window.addEventListener('keydown', function (e) {
+      // console.log(e.keyCode);
+      const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
+      // console.log(audio);
+
+      // Select the corresponding key so we can add the animation.
+      const key = document.querySelector(`.key[data-key="${e.keyCode}"]`);
+      // console.log(key);
+
+      if (!audio) return; // Stop function from running
+
+      // audio.currentTime = 0;
+      // Rewind element to the start so you can play it over and over without a delay.
+      // Without this, even if you hit the same key continuously, it won't play the audio all the time,
+      // since the first hit hasn't finished playing yet.
+      audio.currentTime = 0; // Rewind to the start.
+      audio.play(); // Play the audio
+
+      // To do the animation effect (in the CSS): use 'classList.add' to add the 'playing' class (which is in the CSS file).
+      // Note: 'key' was declared above.
+      // So this adds the class, but now we need to remove the class so it has the animation effect of going away too.
+      key.classList.add('playing');
+
+
+    });
+
+    function removeTransition(e) {
+      // console.log(e);
+      // To specify that we just want the 'transform' property (i.e. we want 'transform' to be the property that ends) -
+      // So, if it's not the 'transform' property, then skip it.
+      if (e.propertyName !== 'transform') return;
+      console.log(e.propertyName);
+      // Now when this is done, we want to reverse everything (i.e. reverse the animation effect).
+      // And we do this by removing the CSS class list using 'this' ('this' refers to the key that was pressed).
+      // And then remove the CSS class 'playing'.
+      this.classList.remove('playing');
+    }
+    // To create to 'going away' effect, use a 'transitionend' event that will fire when it has stopped animating itself.
+    // So what we can do is to listen on each key for when the transition event happens.
+    // We'll declare 'keys' below -> we need to select every single key on the page because we want to listen for it on each one:
+    // const keys = document.querySelectorAll('.key')
+    // Then we'll listen for an event called 'transitionend' on each one.
+    // We're going to loop over every single element (forEach) and attach the event listener.
+    // And the listener we're listening for is 'transitionend'. And then when this ends, we're going to add a function called 'removeTransition',
+    // which we have to create (up above).
+    // So each key gets an event listener added to it, which is 'transitionend'. And when the transition ends, we'll remove it.
+    const keys = document.querySelectorAll('.key');
+    keys.forEach(key => key.addEventListener('transitionend', removeTransition));
+
+  </script>
 
 
 </body>
+
 </html>
