@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Scoped CSS Variables and JS</title>
 </head>
+
 <body>
   <h2>Update CSS Variables with <span class='hl'>JS</span></h2>
 
@@ -21,10 +23,41 @@
   <img src="https://source.unsplash.com/7bwQXzbF6KE/800x500">
 
   <style>
-
     /*
-      misc styles, nothing to do with CSS variables
+      Misc styles, nothing to do with CSS variables
     */
+
+    /* Lesson Objective: When you use a CSS variable, we can then update that variable on any element.
+    And any selectors that are inside of that element that reference that variable will use it.
+
+    ------------------------------------------------------------------------------------------------ */
+
+    /* CSS variables can be updated in JavaScript.
+    When you update a variable in CSS, everywhere on the page where that variable is referenced will update itself.
+    With SASS, you define them at compile time, and it gets compiled, and you can't change it.
+
+    The way that CSS variables work is that you declare them on some sort of element (such as ':root', the highest level that you can get -
+    similar to declaring it on the 'html' element). And this is where we're going to set our default values for those variables: */
+
+    /* Define the variables 'base', 'spacing', and 'blur' along with their default values.
+     And now whenever you changed the values of these variables, the value will change everywhere it is referenced,
+     e.g. if you change the value of the 'base' here, i.e. change the color, and and <hi> and font use this color,
+     then the <h1> and font will both change to the color that it is changed to here in the variable.
+
+     So, how do we write some JavaScript to update these variables? See below in JS section. */
+    :root {
+      --base: #ffc600;
+      --spacing: 10px;
+      --blur: 10px
+    }
+
+    /* Using our variables.
+    When you want to use a variable in CSS, you use 'var' and then pass in the varaible (e.g. 'spacing'). */
+    img {
+      padding: var(--spacing);
+      background: var(--base);
+      filter: blur(var(--blur));
+    }
 
     body {
       text-align: center;
@@ -45,7 +78,71 @@
   </style>
 
   <script>
+
+    // To write some JavaScript to update the variables we defined above in the CSS (i.e. 'base', 'spacing', and 'blur'),
+    // we first select all of our three inputs, so that when they change, we can then update the CSS variables, which will in turn
+    // update the color on the screen:
+
+    // Select all of our inputs on the page (all the inputs we want affected: 'controls' and 'input' --> note, these are from the HTML,
+    // you can also see these in the CSS - 'controls' is the class name).
+
+    // Note: 'querySelector' will give you a 'Node List' (as opposed to an array) (a Node List may look like an array in the console, but it's not).
+    // The difference is that an ARRAY has all kinds of methods (e.g.' 'map', 'reduce', etc.). A Node List only has a few methods (e.g. 'entries', 'forEach', etc.).
+    // So, sometimes people will CONVERT their Node List to an array, but which we will not do here.
+
+    // Instead, we're going to use the 'forEach' method to loop over these inputs (which has recently been added to the Node List methods -
+    // so it's not noecessary for us to convert our Node List to an array, unless we're using an old browser that does not support having the 'forEach' on it).
+
+    // So we'll create a function called 'handleUpdate'. And then we'll listen for a change event on each of the inputs.
+    // And when the change event is called, we're going to call 'handleUpdate'.
+
+    const inputs = document.querySelectorAll('.controls input');
+
+    function handleUpdate() {
+      // console.log(this.value);
+
+      // Get the values.
+      // We first need to know what the suffix is, of the value we're working with.
+      // For example, this does not have a suffix; it just has a hex code (or RGB value) that's going to come out of the input: ' --base: #ffc600'.
+      // But 'spacing' and 'blur' are going to give us values like '10', but they need to be 10 'px'.
+      // So in the inputs in the HTML, we've added some additional information (e.g. 'value="10"' up in line 17), where we've created a data-attribute
+      // (remember, a data-attribute is just an attribute we make up - we just have to prefix it with 'data-' + something), and then we've put on a 'sizing',
+      // or suffix value here called 'px' --> data-sizing="px" (lines 14-17).
+
+      // So what we can do here, is 'const suffix = this.dataset.sizing' (remember, we called it 'sizing': data-sizing="px")
+      // ('dataset' is an object that contains all the data attributes from a specific element;
+      // we dont' have to select it; we dont' have to use any attribut selectors from it. It will just take everything that is 'data-' on that element,
+      // and put it into an object).
+
+      // And then we add, 'or nothing' (|| ''), because some of them do not have sizing, like the color one )'--base':
+      // const suffix = this.dataset.sizing || ''
+      // If we do not add this (|| ''), then we're going to append 'undefined', which is not what we want.
+
+      const suffix = this.dataset.sizing || '';
+      console.log(suffix);
+
+      // Now we need to update the actual variable.
+      // To select a variable, we need to select the entire document (':root'),
+      // and we're going to set a property of '--base', '--spacing', or '--blur'.
+      // Notice that in the HTML above, we have 'name="spacing"', 'name="blur"', and 'name="base"'.
+      // console.log(this.name);
+
+      // Then we tag on our 'suffix' variable at the end.
+      // And now when we change one of these settings in the browser (spacing, blur, base color),
+      // the value is also being update, which is what we want. So now everything works!
+      document.documentElement.style.setProperty(`--${this.name}`, this.value + suffix);
+    }
+
+    inputs.forEach(input => input.addEventListener('change', handleUpdate));
+
+    // Listen for the 'mousemove' update.
+    // So when you move the value in the browser, it's also going to trigger a change.
+    // Without this line, they change in the browser will only happen once you let go of the mouse key.
+    // With this line though, the changes will happen as you move the mouse, rather than only when you let go of the mouse key, which is what we want.
+    inputs.forEach(input => input.addEventListener('mousemove', handleUpdate));
+
   </script>
 
 </body>
+
 </html>
