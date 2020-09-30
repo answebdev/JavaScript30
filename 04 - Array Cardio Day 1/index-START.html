@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Array Cardio 💪</title>
 </head>
+
 <body>
   <p><em>Psst: have a look at the JavaScript Console</em> 💁</p>
   <script>
@@ -30,30 +32,147 @@
     const people = ['Beck, Glenn', 'Becker, Carl', 'Beckett, Samuel', 'Beddoes, Mick', 'Beecher, Henry', 'Beethoven, Ludwig', 'Begin, Menachem', 'Belloc, Hilaire', 'Bellow, Saul', 'Benchley, Robert', 'Benenson, Peter', 'Ben-Gurion, David', 'Benjamin, Walter', 'Benn, Tony', 'Bennington, Chester', 'Benson, Leana', 'Bent, Silas', 'Bentsen, Lloyd', 'Berger, Ric', 'Bergman, Ingmar', 'Berio, Luciano', 'Berle, Milton', 'Berlin, Irving', 'Berne, Eric', 'Bernhard, Sandra', 'Berra, Yogi', 'Berry, Halle', 'Berry, Wendell', 'Bethea, Erin', 'Bevan, Aneurin', 'Bevel, Ken', 'Biden, Joseph', 'Bierce, Ambrose', 'Biko, Steve', 'Billings, Josh', 'Biondo, Frank', 'Birrell, Augustine', 'Black, Elk', 'Blair, Robert', 'Blair, Tony', 'Blake, William'];
 
     // Array.prototype.filter()
-    // 1. Filter the list of inventors for those who were born in the 1500's
+    // 1. Filter the list of inventors for those who were born in the 1500's.
+
+    // Use 'filter'. The way 'filter' works is you pass in a function, and that function is going to loop through every single item in our 'inventors' array,
+    // and it's going to give us the inventor.
+    // So, we take the inventors and loop over them, and for each inventor, we can decide whether we want to keep it or not --> use if statement.
+    // So by returning 'true', that means we keep it.
+    // And you do not have to do 'else' 'return false'.
+    const fifteen = inventors.filter(function (inventor) {
+      if (inventor.year >= 1500 && inventor.year < 1600) {
+        return true; // Keep it
+      }
+    })
+    console.log(fifteen);
+
+    // Looks nicer in the console:
+    console.table(fifteen);
+
+    // This solution can be greatly reduced (both solutions work):
+    // const fifteen = inventors.filter(inventor => inventor.year >= 1500 && inventor.year < 1600)
+
 
     // Array.prototype.map()
     // 2. Give us an array of the inventors first and last names
+    // 'map' takes in an array, it does something with that array, and then returns a NEW array, but of the SAME LENGTH.
+    // 'map' is like a factory machine, where it takes in raw material, and will stamp it somehow, and then pick out that item on the other end.
+    // Whereas 'filter' you can take in 10 things and return 2, 'map' will always return THE SAME AMOUNT OF ITEMS as you give it.
+    const fullNames = inventors.map(inventor => `${inventor.first} ${inventor.last}`);
+    console.log(fullNames);
 
     // Array.prototype.sort()
     // 3. Sort the inventors by birthdate, oldest to youngest
+    // The way that 'sort' works is that you get two items, and you sort just those two items.
+    // And the way that you do that is be returning 1 and -1, and that's going to bubble these items up and down in the array.
+    const ordered = inventors.sort(function (firstPerson, secondPerson) {
+      if (firstPerson.year > secondPerson.year) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
+
+    console.table(ordered);
+
+    // This can be reduced by using a TERNARY OPERATOR (a shorthand if statement).
+    // const ordered = inventors.sort((firstPerson, secondPerson) => firstPerson.year > secondPerson.year ? 1 : -1);
+    // console.table(ordered);
 
     // Array.prototype.reduce()
     // 4. How many years did all the inventors live all together?
+    // What 'reduce' does is give you what you've returned from this function the last time ('total'), and is also going to give you the 'inventor'.
+    // And from that, it's going to return the 'total', which is what the total was last time around (again, 'reduce', 'sort', 'filter' just loop over every single one).
+    // And then we're going to return the number of years that that inventor lived.
+
+    const totalYears = inventors.reduce((total, inventor) => {
+      return total + (inventor.passed - inventor.year);
+    }, 0);
+    // We need '0' here, because the first time it loops, there is not 'total', so it's 'undefined'.
+    console.log(totalYears);
 
     // 5. Sort the inventors by years lived
+    // 'a' means first person; 'b' means second person.
+    const oldest = inventors.sort(function (a, b) {
+      const lastGuy = a.passed - a.year;
+      const nextGuy = b.passed - b.year;
+      if (lastGuy > nextGuy) {
+        return -1;
+      } else {
+        return 1;
+      }
+    });
+    console.table(oldest);
 
     // 6. create a list of Boulevards in Paris that contain 'de' anywhere in the name
     // https://en.wikipedia.org/wiki/Category:Boulevards_in_Paris
 
+    // We need to first get the DOM elements out of the page:
+    // We could do 'document.querySelector' but we don't know what to select.
+    // So, we have to use our dev tools and inspect the Wikipedia page (see link above),
+    // to see what element contains this, which is 'mw-category'.
+    const category = document.querySelector('.mw-category');
+
+    // Then we want to find the links within it ('querySelector('a')').
+    // Note: you can call 'querySelector' on any existing DOM element (e.g. 'category') -
+    // it doesn't always have to be 'document'. It could look inside of an existing element.
+
+    // const links = category.querySelector('a');
+    // const links = Array.from(category.querySelector('a'));
+    // const links = [...category.querySelector('a')];
+
+    // First we're going to convert the list of links into a list of names.
+    // Then we're going to filter that list of names to only include 'de' anywhere in the name.
+    // Remember that 'querySelector' returns a Node List, so we cannot use 'map' (which is only for arrays).
+    // So we first need to change the previous line into an array, because now it's just a Node List.
+    // So we can do that by using the 'spread' operator to SPREAD every single item into an array (see previous code above)
+    // (you could also use 'Array.from').
+    // The SPREAD operator will take every item OUT OF something (an iterable, which in this case is a Node List),
+    // and put it into the containing array.
+
 
     // 7. sort Exercise
     // Sort the people alphabetically by last name
+    const alpha = people.sort(function (lastOne, nextOne) {
+
+      // This gives us an array where the first element is thelast name,
+      // and the second element is the first name, which is backwards:
+
+      // const parts = lastOne.split(', ');
+
+      // So, what we can do is destructure that, meaning that, rather than return an array,
+      // we can t those into their own variables right away:
+      const [aLast, aFirst] = lastOne.split(', ');
+      // Now we can log them as their own separate variables:
+      // console.log(aLast, aFirst);
+
+      const [bLast, bFirst] = nextOne.split(', ');
+
+      return aLast > bLast ? 1 : -1;
+    });
+    console.log(alpha);
 
     // 8. Reduce Exercise
+    // Use 'reduce'
+    // 'reduce' is one of the most flexible methods that we have in an array,
+    // and this is just another way that we can use it:
+
     // Sum up the instances of each of these
-    const data = ['car', 'car', 'truck', 'truck', 'bike', 'walk', 'car', 'van', 'bike', 'walk', 'car', 'van', 'car', 'truck' ];
+    const data = ['car', 'car', 'truck', 'truck', 'bike', 'walk', 'car', 'van', 'bike', 'walk', 'car', 'van', 'car', 'truck'];
+
+    const transportation = data.reduce(function (obj, item) {
+      // console.log(item);
+      if (!obj[item]) {
+        obj[item] = 0;
+      }
+      obj[item]++;
+      return obj;
+      // Put an empty object ({}), so we can loop over every single one.
+    }, {});
+
+    console.log(transportation);
 
   </script>
 </body>
+
 </html>
