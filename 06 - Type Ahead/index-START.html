@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Type Ahead 👀</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
   <form class="search-form">
@@ -14,9 +16,132 @@
       <li>or a state</li>
     </ul>
   </form>
-<script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+  <script>
+    const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
 
-</script>
+    // We need to first fetch the data (which is a huge array).
+    // Then, once that data is back, whenever a user types in to the input field,
+    // we're going to filter that array down to a subset of all of the ones
+    // of either the city name, or the state name will match.
+
+    // To do that, we first need an empty array to put our cities into.
+    const cities = [];
+
+    // Then we need to fetch our data. We're going to be using a new API in the browser called FETCH.
+    // And we FETCH the endpoint.
+    // And what FETCH will do is return a promise, which means something like, something will eventually come back from this FETCH.
+
+    // So the way that we can work with a promise is to call '.then' against it.
+    // And this is going to return a bunch of data.
+    // And what happens is that the data that comes back from our FETCH - it doesn't know what kind of data it is yet (it could be an image, some HTML, audio, etc.).
+    // We know that it is JSON, but we can't just do something like 'JSON.parse(result)'.
+    // And this is because the 'result' (or 'blob', or whatever you want to call it) has to be CONVERTED from the raw data that it is in, into JSON.
+    // To do this, we use the 'json()' method --> 'blob.json' (or 'result.json', etc.) --> and doing this will itself return ANOTHER PROMISE,
+    // which we're going to call '.then' on. And that is going to give us the raw data --> '.then(data => console.log(data))'.
+
+    // So now that we get the data in the console, how do we get this data into 'cities', our empty array?
+    // If we try to PUSH the items into 'cities', we will get nested arrays, which is not what we want.
+
+    // So how do we get each and every item to go into 'cities'?
+    // So if we, for example, push something like 1,2,3,4 --> 'cities.push(1,2,3,4)', and then look at 'cities',
+    // You'll see that everytime we have an argument to push, it will put it as its own item in the array.
+    // And the way that we can change this array into individual arguments, is we SPREAD into it.
+    // So we simply SPREAD into this PUSH method, and now we get what we want - an array of cities:
+    // --> 'cities.push(...data)'.
+    fetch(endpoint)
+      .then(blob => blob.json())
+      .then(data => cities.push(...data))
+
+    // The next thing we need to do is, when someone types into the input field,
+    // we need to run a function that is going to take our massive array, and FILTER it down into a subset,
+    // where you can then listen for it.
+
+    // So were going to create a function called 'findMatches', and that's going to take in a 'wordToMatch' and the 'cities' array,
+    // because we want to pass in the data into the function that it's going to filter.
+
+    // And from that, we're going to 'return' the 'cities' array,
+    // but we're going to call FILTER on it, which is going to chisel it down into a subset of that initial array.
+    // So, each one is going to have a 'place', which is each individual city and state and population.
+    // And from that, we need to figure out if the city or state matches what was searched.
+    // We want to be able to do it, so that if someone types in 'Bos', it returns 'Boston' and any other places with 'Bos'.
+
+    // So we need a couple of RegExps (Regular Expressions).
+    // So how do we put a variable ('wordToMatch') into a Regular Expression?
+    // We need to create a Regular Expression: 'const regex = new RegExp(wordToMatch, 'gi')'
+    // In our Regular Expression, 'g' means 'global' (i.e. it's going to look through the entire string).
+    // 'i' means insensitive, meaning it's going to match lowercase as well as uppercase, regardless of what you use to search.
+
+    // So now we call '.match()' with our 'regex' in here, and that's going to take the 'place.city'.
+    // And also need to match the state, so: '|| place.state.match(regex)'.
+    // And this will check if the city OR the state has either one (e.g. 'Bos').
+    // So if one or the other is true, the whole thing is going to be true,
+    // and so our filter is going to be much smaller, and it will return a smaller array of our filtered items.
+    // And we now have our 'findMatches' function done.
+
+    function findMatches(wordToMatch, cities) {
+      return cities.filter(place => {
+
+        // Figure out if the city or state matches what was searched
+        const regex = new RegExp(wordToMatch, 'gi');
+        return place.city.match(regex) || place.state.match(regex)
+      });
+    }
+
+    // Function that adds in commas to the population:
+    function numberWithCommas(x) {
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+
+    // Now we need to create our display function.
+    // And this is going to be called whenever someone changes the value in the input field.
+    function displayMatches() {
+      // console.log(this.value);
+
+      // Use the 'findMatches' function we created.
+      // So that whenever we type into the input field, it will run the 'displayMatches' function,
+      // call our 'findMatches' function, and find ones that match what we typed in.
+      const matchArray = findMatches(this.value, cities);
+      // console.log(matchArray);
+
+      // Loop over it.
+      // This 'map' is going to return an array when we really want is just one string.
+      // So at the end (see below), we can call '.join('')',
+      // and this will turn it from an array with multiple items, into one big string.
+      const html = matchArray.map(place => {
+        // To highlight whatever we searched for in the results:
+        // Create a RegEx to match the city name, then use that RegEx to replace the word that it matches,
+        // with a span with a class of "hl", and the word that it matches.
+        // So this is going to find whatever it matched in the RegEx, and replace it with a span with a class of highlight,
+        // and then the value that the user had searched for.
+        const regex = new RegExp(this.value, 'gi');
+        const cityName = place.city.replace(regex, `<span class="hl">${this.value}</span>`);
+
+        // And do the same for the state name:
+        const stateName = place.state.replace(regex, `<span class="hl">${this.value}</span>`);
+        return `
+          <li>
+            <span class="name">${cityName}, ${stateName}</span>
+            <span class="population">${numberWithCommas(place.population)}</span>
+          </li>
+        `;
+      }).join('');
+      // Finally, once we've mapped over this array, we can call 'suggestions.innerHTML = html;'
+      // And 'html' is what we declared up above ('const html = ...').
+      suggestions.innerHTML = html;
+    }
+
+    const searchInput = document.querySelector('.search');
+    const suggestions = document.querySelector('.suggestions');
+
+    // Lisen for the 'change' event. Then when the input changes, call 'displayMatches'.
+    // Note that the 'change' event only fires when the user goes off the input field, not when you type and do KEYUP.
+    // If you also want it to fire on KEYUP, then we just add that line of code, so that it listens for the 'keyup' event,
+    // and then run 'displayMatches' on that as well.
+    searchInput.addEventListener('change', displayMatches);
+    searchInput.addEventListener('keyup', displayMatches);
+
+
+  </script>
 </body>
+
 </html>
