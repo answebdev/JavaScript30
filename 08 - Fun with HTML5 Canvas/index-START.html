@@ -1,19 +1,224 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>HTML5 Canvas</title>
 </head>
-<body>
-<canvas id="draw" width="800" height="800"></canvas>
-<script>
-</script>
 
-<style>
-  html, body {
-    margin: 0;
-  }
-</style>
+<body>
+
+  <!-- We just have this canvas element that we need to draw on: -->
+  <canvas id="draw" width="800" height="800"></canvas>
+  <script>
+
+    // HSL SECTION
+    // See: https://mothereffinghsl.com/
+
+    // HSL is essentially the rainbow, but you can programmatically select pieces of the rainbow.
+    // So, the HUE (H) part of HSL is from red all the way over to red on a rainbow.
+    // The SATURATION (S) is how bright it is.
+    // The L is the lightness. Lightness all the way is white, and the absence of lightness is black.
+    // HSL = Hue Saturation Lightness.
+
+    // So what we can do using https://mothereffinghsl.com/ is to programmatically pick different pieces of the rainbow.
+    // So if 0 is red, and 360 is the other spectrum, that means that for every 360 draws that we do,
+    // we can just pick an increment of color, and then flip it back.
+
+    // So down in our initial variables (see down below), we can do:
+    // let hue = 0;
+    // And as we draw, before we begin the path, we'll say:
+    // ctx.strokeStyle (remember, we started with '#BADA55', but now we're going to be setting it with the variable 'hue',
+    // and then we're going to give it 100% saturation and 50% lightness: `hsl(${hue}, 100%, 50%)`):
+    // ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+
+
+    // First, we need to grab the canvas element.
+    const canvas = document.querySelector('#draw');
+
+    // The second thing we need is something called a 'context'.
+    // Canvas on the web is sort of like Microsoft Paint, where you just get a block of actual pixels,
+    // and you need to then draw on that.
+    // You don't draw directly on the canvas element in HTML. You draw on something called the 'context'.
+    // And the 'context' can either be 2D (which is what we'll be working with here), or 3D.
+
+    // So, the second thing we need to do is grab the 'context', and ask it for the '2d' context:
+    const ctx = canvas.getContext('2d');
+
+    // The next thing we need to do is to size up our canvas to be the exact width of the window .
+    // By default, the canvas is going to be 800 pixels by 800 pixels (width="800" height="800" - see HTML above).
+    // However, we want to resize it before we do any of our drawing.
+    // This will make the canvas as big as the window is:
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // Set the base settings: strokeStyle, lineCap, lineJoin.
+    // When you draw on something, there needs to be a color, and we're going to start with '#BADA55'.
+    // Also, the end of the line, should it be squared off? And when a line meets another line, or rounded around the corners. So that's what 'lineJoin' and 'lineCap' are about.
+    ctx.strokeStyle = '#BADA55';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+
+    // By default the lines drawn are really thin, so let's set the width:
+    ctx.lineWidth = 100;
+
+    // We can also play with the Global Composite Operator, which are like PhotoShop blend modes,
+    // and which can be used inside of 'context'.
+    // And what happens here, is when we draw on the canvas, the colors will blend with each other as you draw over them.
+    // So we can also play with the different blend modes, like 'multiply', 'subtract':
+    // https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+    ctx.globalCompositeOperation = 'multiply';
+
+    // Next, we need a couple dummy variables.
+    // What this does, is when we click down on the canvas element, and we move our mouse, and then we let go, and then we mov our mouse again,
+    // nothing happens when we're moving our mouse.
+    // It only draws when our cursor is actually down.
+
+    // So, what we're doing is creating like a flag here ('isDrawing'), where we set it to 'false',
+    // and then when we click down, we set it to 'true'.
+    // And when we click up (we let go of the button), we're going to set it to 'false'.
+    // And so this is sort of going to be our flag to tell us, should we actually draw to this canvas,
+    // or is someone just moving their mouse without doing anything?
+    let isDrawing = false;
+
+    // 'lastX' and 'lastY' are going to help us out, because when we draw to a canvas, what needs to happen for us to draw a line is
+    // we need a starting x and y, and an ending x and y.
+    // You can't just tell it to draw a line at coordinates 100 and 100 (for example), because a line needs a start and a stop, not just a start.
+    // So 'lastX' and 'lastY' is going to be where we start the line from, and then when we finish drawing, where we end.
+    let lastX = 0;
+    let lastY = 0;
+
+    // Set 'hue' to 0 (see HSL SECTION above)
+    let hue = 0;
+
+    // This means that it's going to be building up.
+    let direction = true;
+
+    // Next, we need a function ('draw'), and it's going to take in an event ('e').
+    // This 'draw' function is going to be called whenever we move our mouse on top of the canvas.
+    // But we don't want this to run all the time, we want to only do it when the user has clicked down.
+    // So we'll add an if statement: if the user is not drawing ('!isDrawing'), then 'return'.
+    // And this will stop the function from running when a user is not moused down.
+    // So everything below this if statement is only going to run when the user's mouse is actually down.
+    // So that's our click and drag functionality done.
+
+    // And then we'll have another event listener down below to change this '!isDrawing' --> 'mousedown'.
+    function draw(e) {
+      if (!isDrawing) return;
+      console.log(e);
+
+      // See HSL SECTION above:
+      // And as we draw, before we begin the path, we'll say:
+      // ctx.strokeStyle (remember, we started with '#BADA55', but now we're going to be setting it with the variable 'hue',
+      // and then we're going to give it 100% saturation and 50% lightness: `hsl(${hue}, 100%, 50%)`):
+      // ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+      ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+
+      // What we can also do, is we can also change the line width.
+      // Remember, we set the width above (to change the default width), so we can use that variable as well.
+      // And we can set it to 'hue'.
+      // And what will happen is, as we draw, the width will get bigger and bigger (just as the hue continues to increment up to 360 -
+      // we've incremented hue below: 'hue++').
+      // And then at some point, when 'hue' gets to 360 and resets to 0,
+      // the line width will start over again and be thin again.
+
+      // ctx.lineWidth = hue;
+
+      // But as it is, the line width gets too fat as we keep drawing.
+      // So we'll declare a variable 'direction' and set it to 'true' (see above).
+      // This means that it's going to be building up.
+      // So we have 'let direction = true'.
+      // And we dont' want 'ctx.lineWidth = hue', so we'll get rid of that.
+
+      // And then down below where we increment 'hue' ('hue++'),
+      // for every loop, we are going to increment the line width (see below).
+
+      // Code the logic for the actual drawing.
+      // All of these following 'ctx' lines start up our line, but we're not actually going to see anything on the page
+      // until we call 'stroke()' (down at the end of these lines).
+
+      // The first thing we want to do is start a 'path' (remember, 'ctx' is where we do all of our drawing for our canvas).
+      ctx.beginPath();
+
+      // Start from.
+      // Then, we need to start with an x and a y, move it to an x and a y, and that will complete our drawing of that.
+      ctx.moveTo(lastX, lastY);
+
+      // Go to.
+      // 'e.offsetX' and 'e.offsetY' are values that come from the actual event that happens.
+      ctx.lineTo(e.offsetX, e.offsetY);
+
+      // Finally, we call 'ctx.stroke()'':
+      ctx.stroke();
+
+      // When we're done, this 'draw' function, we want to update 'lastX' and 'lastY' to be wherever they were on the canvas.
+      // lastX = e.offsetX;
+      // lastY = e.offsetY;
+      // -->
+      // ES6 Trick (Destructuring an Array): We can actually set both of these variables in one line:
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+
+      // Increment the 'hue' setting so that the hue changes as we draw.
+      // Remember initially, 'hue' is set to 0 (see above). So, the second time we draw, it'll be 1. The third time, 2, etc.
+      hue++;
+
+      // And eventually, as we keep drawing, we're just going to get all the way around.
+      // And the cool part about HSL, is if we go over 360, it'll be, for example, 906, but it'll just keep going around and around.
+      // So what we could also do is to reset the hue if it's greater than or equal to 360. And this will work just as well.
+      if (hue >= 360) {
+        hue = 0;
+      }
+
+      // For every loop, we are going to increment the line width: 'ctx.lineWidth++'.
+      // And what this will do is increment the line width.
+      // But it will just keep getting infinitely bigger, so we'll add an if statement.
+      // So if the line width is >= 100 OR <= 1, then we want to flip the 'direction' (which we declared up above).
+      if (ctx.lineWidth >= 100 || ctx.lineWidth <= 1) {
+        direction = !direction;
+      }
+      // If 'direction' is equal to 'true', then the line width goes up.
+      // otherwise, the line width goes down.
+      if (direction) {
+        ctx.lineWidth++;
+      } else {
+        ctx.lineWidth--;
+      }
+    }
+
+    // Event listener for when the mouse is down.
+    // When the mouse is down, we'll say, 'isDrawing = true'.
+    canvas.addEventListener('mousedown', (e) => {
+      isDrawing = true;
+
+      // Update our 'lastX' and 'lastY'.
+      // So as soon as a user clicks down on the mouse to start, before doing a 'mousemove' (because 'mousedown' will happen before the mouse is moved),
+      // then we're going to update 'lastX' and 'lastY'.
+      // And this is going to put us where we want to go, rather than starting at 0 and 0.
+      [lastX, lastY] = [e.offsetX, e.offsetY];
+    });
+
+    // Listen for the 'mousemove' event on the canvas. Notice that the 'mousemove' event calls the 'draw' function.
+    // So now when we move our mouse on the canvas ('mousemove'), it's going to call the 'draw' function.
+    canvas.addEventListener('mousemove', draw);
+
+    // When the mouse is up, 'isDrawing = false'.
+    canvas.addEventListener('mouseup', () => isDrawing = false);
+
+    // Listen for 'mouseout' --> 'isDrawing = false'.
+    // What can happen is you can click down, let your mouse leave the actual window and let go, and come back.
+    // And it's still going to think the mouse is down.
+    // That's what 'mouseout' is, and why we set 'isDrawing' to 'false',
+    // so that when you 'mouseout', it's going to automatically say, "Oh, you're no longer drawing".
+    canvas.addEventListener('mouseout', () => isDrawing = false);
+  </script>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+    }
+  </style>
 
 </body>
+
 </html>
