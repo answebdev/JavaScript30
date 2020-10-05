@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Console Tricks!</title>
 </head>
+
 <body>
 
   <p onClick="makeGreen()">×BREAK×DOWN×</p>
@@ -18,29 +20,152 @@
     }
 
     // Regular
+    console.log('Hello');
 
     // Interpolated
+    // We can also interpolate values into console.log.
+    // Use '%s', and then whatever you pass in as the second arguement will be passed in to the first one.
+    // We don't really need to use this anymore, now that we have ES6 back ticks.
+    console.log("Hello, I am a %s!", "🚀");
 
     // Styled
+    // We can also style our text with '%c'.
+    // Then pass in a style as the second argument. And you can apply any font CSS to it.
+    console.log('%c I am some giant text.', 'font-size: 50px');
+
+    // You can also add more than one style:
+    console.log('%c I am some giant text.', 'font-size: 50px; background: red; text-shadow: 10px 10px 0 blue;');
 
     // warning!
+    // This will give us a warning and where it got called.
+    console.warn('Oh, no!!!');
 
-    // Error :|
+    // Error
+    // This will display an error in the console, as well as give a stack trace as to were the error is.
+    console.error('Oh, no!!!');
 
     // Info
+    // This will give us some info.
+    console.info('Crocodiles eat 3-4 people per year.')
 
     // Testing
+    // You can use this to test for something, and if it is 'false', it will through an error into your console.
+    // And if it is 'true', nothing will happen.
+
+    // You can use '.assert()' this to check if things are true.
+    // If we run this, we won't see anything in the console, because this is true (1 === 1).
+    console.assert(1 === 1, 'That is wrong!');
+
+    // console.assert will only fire if something is wrong, and then it will print, "Assertion failed: That is wrong!"
+    // (or whatever message was passed in as the second argument).
+    console.assert(1 === 2, 'That is wrong!');
+
+    // If you were to grab the paragraph on the page,
+    // you can then assert that 'p.classList.contains' 'Ouch', for example.
+    // And then you could tell the user, 'You did not select the right element!'
+
+    // And if the 'classList' does not contain 'Ouch',
+    // this will print: 'Assertion failed: You did not select the right element!'
+    const p = document.querySelector('p');
+    console.assert(p.classList.contains('Ouch'), 'You did not select the right element!');
 
     // clearing
+    // This will clear your console:
+    console.clear();
 
     // Viewing DOM Elements
+    // If you console.log an element, such as 'p', you can see that actual element in the console.
+    // This will show you the actual element itself.
+    console.log(p);
 
+    // But how do you know what all the available properties and methods on that element are?
+    // Well, if you do 'console.dir', this will give you a dropdown with that information.
+    // This will allow you to open the element up and take a look at all the different properties and methods that are available to that element.
+    console.dir(p);
+
+    // -----
+    console.clear();
+    // -----
     // Grouping together
+    // If we were to take the 'dogs' array (see top) and loop over each one, for example:
+    dogs.forEach(dog => {
+      console.log(`This is ${dog.name}`);
+    });
+
+    // But what if we have some other information, like 'age'?
+    // Well, this can get very messy in the console; we have a lot going on here:
+    dogs.forEach(dog => {
+      console.log(`This is ${dog.name}`);
+      console.log(`This is ${dog.name} is ${dog.age} years old.`);
+      console.log(`This is ${dog.name} is ${dog.age * 7} dog years old.`);
+    });
+
+    // And imagine you were doing more than logging just three strings.
+    // So what we can do is use 'console.group'.
+    // And when you're doine, do 'console.groupEnd', and you use the SAME STRING that you use to define that group,
+    // which in this case, is `${dog.name}`.
+    // And now when you check the console, you can see the information organized into the groups that you've made,
+    // and you can also open and close (collapse) them.
+    dogs.forEach(dog => {
+      console.group(`${dog.name}`);
+      console.log(`This is ${dog.name}`);
+      console.log(`This is ${dog.name} is ${dog.age} years old.`);
+      console.log(`This is ${dog.name} is ${dog.age * 7} dog years old.`);
+      console.groupEnd(`${dog.name}`);
+    });
+
+    // If you think that this is still a little bit messy, you can switch out 'group' for 'groupCollapsed',
+    // and the groups will be collpased in the console (you can, of course, then open them).
+    dogs.forEach(dog => {
+      console.groupCollapsed(`${dog.name}`);
+      console.log(`This is ${dog.name}`);
+      console.log(`This is ${dog.name} is ${dog.age} years old.`);
+      console.log(`This is ${dog.name} is ${dog.age * 7} dog years old.`);
+      console.groupEnd(`${dog.name}`);
+    });
 
     // counting
+    // This will count how ever many times you use a specific word, number, object, DOM node...anytihng that you have:
+    console.count('Adolf');
+    console.count('Adolf');
+    console.count('Adolf');
+    console.count('Adolf');
+
+    // In the console, this will print:
+    // Adolf: 1
+    // Adolf: 2
+    // Adolf: 3
+    // Adolf: 4
 
     // timing
+    // You can use this to see how long something takes.
+    // What you can do is start a timer.
+    console.time('Fetching data');
 
+    // And thenyou can do something that takes time (e.g. fetching some data from GitHub).
+    // Then when you're done, you simply run 'console.timeEnd',
+    // and then you pass in the SAME STRING that you used to start it (in this case, 'Fetching data') --> 'console.timeEnd('Fetching data')'.
+    fetch('https://api.github.com/users/answebdev')
+      .then(data => data.json())
+      .then(data => {
+        console.timeEnd('Fetching data');
+        console.log(data);
+      });
+
+    // And then in the console, it will log: 'Fetching data: 506ms - timer ended'.
+    // So you can see how long this takes.
+
+    // There is also 'performance.now()' in the browser,
+    // but this is a nice way to get a quick idea of how long your things are taking.
+    // You don't have to have variables or anything like that.
+    // You just start and stop them.
+
+    // table
+    // Use console.table
+    // You can take an array of objects (see above), and assuming that they all have the same properties, like 'name' and 'age',
+    // it will display them in a nice table.
+    console.table(dogs);
   </script>
 </body>
+
 </html>
