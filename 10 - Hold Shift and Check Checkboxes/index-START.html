@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Hold Shift to Check Multiple Checkboxes</title>
 </head>
+
+<!-- This functionality is fairly common in applications, such as Gmail, where the user selects a whole bunch of emails and delete them at once. -->
+
 <body>
   <style>
-
     html {
       font-family: sans-serif;
-      background: #ffc600;
+      background: #3f4448;
     }
 
     .inbox {
@@ -17,7 +20,7 @@
       margin: 50px auto;
       background: white;
       border-radius: 5px;
-      box-shadow: 10px 10px 0 rgba(0,0,0,0.1);
+      box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
     }
 
     .item {
@@ -30,7 +33,7 @@
       border-bottom: 0;
     }
 
-    input:checked + p {
+    input:checked+p {
       background: #F9F9F9;
       text-decoration: line-through;
     }
@@ -44,13 +47,13 @@
       padding: 20px;
       transition: background 0.2s;
       flex: 1;
-      font-family:'helvetica neue';
+      font-family: 'helvetica neue';
       font-size: 20px;
       font-weight: 200;
       border-left: 1px solid #D1E2FF;
     }
   </style>
-   <!--
+  <!--
    The following is a common layout you would see in an email client.
 
    When a user clicks a checkbox, holds Shift, and then clicks another checkbox a few rows down, all the checkboxes inbetween those two checkboxes should be checked.
@@ -95,7 +98,81 @@
     </div>
   </div>
 
-<script>
-</script>
+  <script>
+    // Select every single check box - we need to listen for when they get checked.
+    const checkboxes = document.querySelectorAll('.inbox input[type="checkbox"]');
+    // console.log(checkboxes);
+
+    // When we click the first checkbox, we need to put that into a variable,
+    // because when we click the second one (no matter which one), and you're holding down the 'shift' key,
+    // we need to know what that last one was (i.e. the first button that was clicked).
+    // So we'll create a variable called 'lastChecked' for this.
+    // And we're using 'let' (not 'const'), because it's going to be reassigned constantly.
+    // And then inside the 'handleCheck' function (the LAST thing we're going to do), we'll do 'lastChecked = this' (see below).
+    let lastChecked;
+
+    function handleCheck(e) {
+      // console.log(e);
+      // Check if they had the shift key down.
+
+      // The other thing we need to do is when we uncheck, it will also trigger the 'handleCheck' function.
+      // AND check that they are checking it.
+
+      // Loop through every single checkbox, and look for the FIRST ONE that was checked, and then the LAST ONE.
+      // As it loops through each box, it will say, "No, you're not check, no, no...yes, you are checked".
+      // Then continue checking the next boxes until getting to the last box that was checked, and then STOP.
+      // Rather than try to figure out where they are in the DOM, figuring out which elements are in between, finding parents, etc.
+      // That's too fragile a way to do it - you're depending on having the HTML set just so.
+      // And then in someone else comes along and changes the HTML a little, it would just break.
+
+      // So, we're going to loop through every single checkbox.
+      // We're going to create a variable called 'inBetween'.
+      // And what 'inBetween' will do, is loop through and say 'inBetween = false' if it's not checked.
+      // And when it finds the first checked box it will say, "Ok, this is where we started - we are now in the area which we wish to check".
+      // Then keep checking.
+      // The 'inBetween variable is going to be set' to 'true' when we're here (in between the first and last checked boxes).
+      // And then when we hit our last checked box, we're going to say 'inBetween' is false,
+      // because we're done, and we're no longer going to check any of the other boxes.
+      let inBetween = false;
+
+      // If the event of the shift key is there (that means the user is holding it down), AND 'this.checked'.
+      // So, if the shift key is down AND they are checking the box, then we can continue with the code.
+      if (e.shiftKey && this.checked) {
+        // CONTINUE WITH CODE
+        // Loop over every single checkbox
+        checkboxes.forEach(checkbox => {
+          console.log(checkbox);
+          // As we loop, set the 'inBetween' variable to 'true'.
+          if (checkbox === this || checkbox === lastChecked) {
+            inBetween = !inBetween;
+            console.log('Starting to check them in between.');
+          }
+
+          if (inBetween) {
+            checkbox.checked = true;
+          }
+        });
+
+
+
+      }
+      // The other thing we need to do is when we uncheck, it will also trigger the 'handleCheck' function.
+
+
+
+
+
+      lastChecked = this
+    }
+
+    // Listen for one of the checkboxes to get clicked or changed.
+    // Loop over each one of the checkboxes and listen for a click (note that the 'click' event will fire,
+    // even if you use your keyboard).
+    // And so when someone clicks a checkbox, we're going to run a function called 'handleCheck' (see above).
+    checkboxes.forEach(checkbox => checkbox.addEventListener('click', handleCheck));
+
+
+  </script>
 </body>
+
 </html>
