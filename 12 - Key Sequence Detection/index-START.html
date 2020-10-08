@@ -1,12 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Key Detection</title>
   <script type="text/javascript" src="https://www.cornify.com/js/cornify.js"></script>
 </head>
+
 <body>
-<script>
-</script>
+
+  <!-- Topic: Learning about key sequencing detection.
+  This means, when someone inputs a certain sequence of keys, into the window, an input, etc.
+  then something needs to happen.
+  And what this is used most for online is the Konami Code (in video games in the 80's or 90s, if you did on your controller a sequence like
+  up-up-down-down-left-right-left-right-B-A...then this will trigger unlimited lives, or something like that - cheat code).
+  
+  https://www.buzzfeed.com/ has a Konami Code. If you do "up-up-down-down-left-right-left-right-B-A(-Enter)" (using the arrow keys for the directions),
+  then something happens (as of this date, confetti-like dots fall).
+  Different websites have easter eggs like this.
+
+  So, we're going to see how that works. -->
+
+
+
+
+  <script>
+
+    const pressed = [];
+
+    // This is the secret code we're looking for (like "up-up-down-down-left-right-left-right-B-A"):
+    const secretCode = 'wesbos'
+
+    // Listen for the 'window.addEventListener'.
+    // We're going to listen for the 'keyup' event.
+    // And when this happens, we're going to run a function.
+    window.addEventListener('keyup', (e) => {
+      // This is going to tell us the name of the key that was pressed: 'console.log(e.key)'.
+      console.log(e.key);
+
+      // Whenever someone presses a key,
+      // we're going to push it into the 'pressed' array (see above).
+      pressed.push(e.key);
+
+      // And this is great, but the array can get vey large, because it's getting everything that's pressed.
+      // So we want to trim this array to be the maximum that we would ever need.
+      // And in our case, if we're just looking for the word 'wesbos' (the secret code - see above),
+      // then at maximum, we are looking for 6 characters, since 'wesbos' has 6 characters.
+
+      // So let's splice that.
+      // And we want to start from counting from the back (the end) and go forward.
+      // We don't want to start at the beginning.
+      // So the way that we do that is we use negative, secret code: '-secretCode.length - 1'.
+      // And this is going to - say we're looking for 6 letters - it's going to go from the back (starting with 's'), up 7 letters.
+
+      // And then we're going to trim from there, which is going to be 'pressed.length',
+      // which is the length of the array, minus 'secretCode': 'pressed.length - secretCode.length'.
+      // And this will give us the exact number that we need.
+
+      // So now in the browser, when we press the keys for 'wesbos', these 6 characters will be pushed into the array: ["w", "e", "s", "b", "o", "s"].
+      // But as we continue pressing keys, remember that we want to start counting from the back of the array, and then trim from there,
+      // because remember, we only want to have 6 elements in the array.
+      // So as we continue typing, the first element of the array ("w") will be pushed out,
+      // and the 7th key that was pressed will be added to the end of the array.
+      // So, if we're keying "wesbos is cool", when we press the keys for "wesbos", we get ["w", "e", "s", "b", "o", "s"],
+      // but as we continue typing, the first elements get pushed out of the array as the newer elements are pushed in through the back:
+      // [ "e", "s", "b", "o", "s", "i" ] --> Here, we've keyed "wes bos i" --> the "w" is gone and the "i" has been added from the back.
+      // [ "s", "b", "o", "s", "i", "s" ] --> Here, we've pressed "wesbos is"...
+      // [ "b", "o", "s", "i", "s", "c" ] --> Here, we've typed "wesbos is c".
+      // Etc.
+
+      pressed.splice(-secretCode.length - 1, pressed.length - secretCode.length);
+      console.log(pressed);
+
+      // Now all that's left is for us to check if this array contains the secret code that we're looking for.
+      // And remember that we have an array, so we need to use 'join('')' to turn it into a string.
+      if (pressed.join('').includes(secretCode)) {
+        // Here is where you add the code of what happens when the secret code has been correctly guessed.
+        console.log("DIN DING DING!!!");
+
+        // cornify.js (see top of code above)
+        // There's a function called 'cornify_add()', and when you run it, it adds some random stuff to the browser (random unicorns).
+        // Note that we've added a link to CORNIFY.JS to the HEAD of the HTML to be able to use it here.
+        cornify_add();
+      }
+    })
+  </script>
 </body>
+
 </html>
