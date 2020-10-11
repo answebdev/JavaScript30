@@ -1,17 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>LocalStorage</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <!--
       Fish SVG Cred:
       https://thenounproject.com/search/?q=fish&i=589236
    -->
 
-   <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><g><path d="M495.9,425.3H16.1c-5.2,0-10.1,2.9-12.5,7.6c-2.4,4.7-2.1,10.3,0.9,14.6l39,56.4c2.6,3.8,7,6.1,11.6,6.1h401.7   c4.6,0,9-2.3,11.6-6.1l39-56.4c3-4.3,3.3-9.9,0.9-14.6C506,428.2,501.1,425.3,495.9,425.3z M449.4,481.8H62.6L43,453.6H469   L449.4,481.8z"/><path d="M158.3,122c7.8,0,14.1-6.3,14.1-14.1V43.4c0-7.8-6.3-14.1-14.1-14.1c-7.8,0-14.1,6.3-14.1,14.1v64.5   C144.2,115.7,150.5,122,158.3,122z"/><path d="M245.1,94.7c7.8,0,14.1-6.3,14.1-14.1V16.1c0-7.8-6.3-14.1-14.1-14.1C237.3,2,231,8.3,231,16.1v64.5   C231,88.4,237.3,94.7,245.1,94.7z"/><path d="M331.9,122c7.8,0,14.1-6.3,14.1-14.1V43.4c0-7.8-6.3-14.1-14.1-14.1s-14.1,6.3-14.1,14.1v64.5   C317.8,115.7,324.1,122,331.9,122z"/><path d="M9.6,385.2c5.3,2.8,11.8,1.9,16.2-2.2l50.6-47.7c56.7,46.5,126.6,71.9,198.3,71.9c0,0,0,0,0,0   c87.5,0,169.7-36.6,231.4-103.2c5-5.4,5-13.8,0-19.2c-61.8-66.5-144-103.2-231.4-103.2c-72,0-142.2,25.6-199,72.5l-50-47.1   c-4.4-4.1-10.9-5-16.2-2.2c-5.3,2.8-8.3,8.7-7.4,14.6l11.6,75L2.2,370.6C1.3,376.5,4.2,382.4,9.6,385.2z M380.9,230.8   c34.9,14.3,67.2,35.7,95.3,63.6c-10.1,10-20.8,19.2-31.9,27.5c-22.4-3.3-29.6-8.8-30.7-9.7c-4-5.7-11.8-7.7-18.1-4.4   c-6.9,3.6-9.5,12.2-5.9,19.1c1.9,3.5,7.3,10.3,22.4,16c-10.1,5.7-20.5,10.7-31.1,15.1C352.4,320.2,352.4,268.6,380.9,230.8z    M36.3,255.6l29.4,27.7c5.3,5,13.6,5.1,19.1,0.3c53.2-47.6,120.7-73.7,190-73.7c26.9,0,53.2,3.9,78.5,11.3   c-29.3,44.6-29.3,102,0,146.6c-25.3,7.4-51.6,11.3-78.5,11.3c-69,0-136.3-26-189.4-73.2c-2.7-2.4-13.4-6.3-19.1,0.3l-30.1,28.3   l5.7-40C42.2,293,36.3,255.6,36.3,255.6z"/><circle cx="398.8" cy="273.8" r="14.1"/></g></svg>
+  <!-- TODAY'S TOPICS:
+  1.  LocalStorage - persisting our state with LocalStorage
+  2.  Event Delegation -->
+
+  <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" x="0px" y="0px"
+    viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve">
+    <g>
+      <path
+        d="M495.9,425.3H16.1c-5.2,0-10.1,2.9-12.5,7.6c-2.4,4.7-2.1,10.3,0.9,14.6l39,56.4c2.6,3.8,7,6.1,11.6,6.1h401.7   c4.6,0,9-2.3,11.6-6.1l39-56.4c3-4.3,3.3-9.9,0.9-14.6C506,428.2,501.1,425.3,495.9,425.3z M449.4,481.8H62.6L43,453.6H469   L449.4,481.8z" />
+      <path
+        d="M158.3,122c7.8,0,14.1-6.3,14.1-14.1V43.4c0-7.8-6.3-14.1-14.1-14.1c-7.8,0-14.1,6.3-14.1,14.1v64.5   C144.2,115.7,150.5,122,158.3,122z" />
+      <path
+        d="M245.1,94.7c7.8,0,14.1-6.3,14.1-14.1V16.1c0-7.8-6.3-14.1-14.1-14.1C237.3,2,231,8.3,231,16.1v64.5   C231,88.4,237.3,94.7,245.1,94.7z" />
+      <path
+        d="M331.9,122c7.8,0,14.1-6.3,14.1-14.1V43.4c0-7.8-6.3-14.1-14.1-14.1s-14.1,6.3-14.1,14.1v64.5   C317.8,115.7,324.1,122,331.9,122z" />
+      <path
+        d="M9.6,385.2c5.3,2.8,11.8,1.9,16.2-2.2l50.6-47.7c56.7,46.5,126.6,71.9,198.3,71.9c0,0,0,0,0,0   c87.5,0,169.7-36.6,231.4-103.2c5-5.4,5-13.8,0-19.2c-61.8-66.5-144-103.2-231.4-103.2c-72,0-142.2,25.6-199,72.5l-50-47.1   c-4.4-4.1-10.9-5-16.2-2.2c-5.3,2.8-8.3,8.7-7.4,14.6l11.6,75L2.2,370.6C1.3,376.5,4.2,382.4,9.6,385.2z M380.9,230.8   c34.9,14.3,67.2,35.7,95.3,63.6c-10.1,10-20.8,19.2-31.9,27.5c-22.4-3.3-29.6-8.8-30.7-9.7c-4-5.7-11.8-7.7-18.1-4.4   c-6.9,3.6-9.5,12.2-5.9,19.1c1.9,3.5,7.3,10.3,22.4,16c-10.1,5.7-20.5,10.7-31.1,15.1C352.4,320.2,352.4,268.6,380.9,230.8z    M36.3,255.6l29.4,27.7c5.3,5,13.6,5.1,19.1,0.3c53.2-47.6,120.7-73.7,190-73.7c26.9,0,53.2,3.9,78.5,11.3   c-29.3,44.6-29.3,102,0,146.6c-25.3,7.4-51.6,11.3-78.5,11.3c-69,0-136.3-26-189.4-73.2c-2.7-2.4-13.4-6.3-19.1,0.3l-30.1,28.3   l5.7-40C42.2,293,36.3,255.6,36.3,255.6z" />
+      <circle cx="398.8" cy="273.8" r="14.1" />
+    </g>
+  </svg>
 
   <div class="wrapper">
     <h2>LOCAL TAPAS</h2>
@@ -25,14 +46,230 @@
     </form>
   </div>
 
-<script>
-  const addItems = document.querySelector('.add-items');
-  const itemsList = document.querySelector('.plates');
-  const items = [];
+  <script>
+    const addItems = document.querySelector('.add-items');
+    const itemsList = document.querySelector('.plates');
 
-</script>
+    // All of our data is going to be stored in this array.
+    // It's going to be an array of objects, which has the name of the array,
+    // and the status (whether it's tacoed - clicked - or not).
+
+    // Try to get 'items' from LocalStorage, and then, if it isn't there in LocalStorage, then fall back into an empty array ([]).
+    // This will populat items on page load (because of '.getItem'), meaning that if there are items there,
+    // then when the page reloads, the items will still be there.
+    const items = JSON.parse(localStorage.getItem('items')) || [];
+
+
+    // This function is going to give us the event, so we pass in 'e'.
+    function addItem(e) {
+      // At this point, our page keeps refreshing, which we dont' want. To prevent that: 'e.preventDefault()'
+      // This is going to stop the page from reloading, because by default a form (which we have here),
+      // is going to reload the page (or, send the data to an external source - generally on the server side).
+      // So this prevents the default of that happening:
+      e.preventDefault();
+      // console.log('Hello');
+
+      // This is what we do to get the text so that we can put it into the object.
+      // We first grab the input box which has a name of 'item' on it.
+      // We can do 'document.querSelector'...
+      // ...but we can also use 'this.querySelector'. Why can we do that?
+      // that's because 'this' is the actual form (that's the whole <form> tag).
+      // And then we'll look inside of that FORM tag for something that has a 'name' attribute of 'item'.
+      // Then we call 'value' against all that (that's why we wrap it all in parentheses).
+      // This is going to give us the input, and 'input' has a property called 'value', which is whatever the user has typed into it.
+      const text = (this.querySelector('[name=item]')).value;
+
+      // Take submitted text (i.e. the item inputted), and put it into an object.
+      // 'done' is going to be 'false' because by default, the item is NOT going to be checked when it's first submitted.
+      const item = {
+        text: text,
+        done: false
+      };
+      // console.log(item);
+
+      // Take the inputted 'item' and put it into the 'items' array.
+      items.push(item);
+
+      // Call the 'populateList' function, and pass in our list of 'items', and our 'itemsList' (note that the 'populateList'
+      // function has two parameters passed in, so we need to pass these two into it).
+      // So every time we add an item, we are calling this 'populateList' function, which creates the HTML (list items --> <li>).
+
+      // One thing to note is that every time we add an item, the 'populateList' function is recreating the entire list.
+      // So if you are really worried about performance (it's not a big deal here - it's fast), then you would want to look at
+      // how to update just that one list item (<li>), rather than re-render the entire list.
+      // And that's where something like React or Angular become really helpful (because React, for example, only renders what was updated, and not everything, even though it wasn't updated (virtual DOM)).
+      populateList(items, itemsList);
+
+      // SET the 'items' array into LocalStorage using 'setItem'.
+      // 'items' is what the 'key' is called in Chrome dev tools when you check the local storage (see local storage notes below).
+      // And then, what do we set the data to?
+      // Well, although 'localStorage' seems like it's an object, it's simply just a 'key' 'value' store, and you may only use strings in LocalStorage,
+      // which means we cannot just pass in 'items' as the second argument, since 'items' is an array:
+      // localStorage.setItem('items', items) --> will not work. You'll get [object Object] in the dev tools.
+      // So when you try to put something else other than a string into LocalStorage, the browser will not know how to handle it and just convert it to a string using the '.toString' method,
+      // and so what it returns is [object Object], which is not what we want.
+
+      // So what we actually need to do is STRINGIFY it (i.e. the 'items' array) before we convert it.
+      // So when we do 'JSON.stringify(items)', it's going to convert your objects and arrays into a JSON string equivalent.
+      // And now when you check the 'Application' tab in dev tools, we now see that our items are being stored.
+      // And though it looks like an array of objects, it really is just text.
+      // And we can check in the console too by doing 'localStorage.getItem('items')', and then we can see our stored items in string form.
+
+      // However, you can wrap it in 'JSON.parse', and that's going to then take it from the string, and put it back into whatever it was intially,
+      // which in our case, is an array of objects.
+
+      // That's what we need to do on page load (see below - the very last thing).
+      localStorage.setItem('items', JSON.stringify(items));
+
+      // Clear the input
+      // 'this' is the form element, and form elements have an element called 'reset'.
+      this.reset();
+    }
+
+    // LOCAL STORAGE
+    // The way that LocalStorage works, is that you have this object in the browser called 'localStorage'.
+    // And if you open it up in the console, you can see a list of things that have been saved to this domain.
+    // Note: this is only on a computer by computer, browser by browser, website by website basis.
+    // But you're able to save text to the browser. And then when you reload the page, you'll be able to grab this text out of it.
+    // So if you go to your 'Application' tab in Chrome dev tools and go to Local Storage,
+    // and then click on the domain that you're working on (e.g. 'file://'), you should see that there's a 'key' of 'items' (for example),
+    // and a 'value' of something else.
+    // (you might see a whole bunch of other stuff in the 'key' section, depending on if you've ever run other applications on your local host).
+    // And so in the 'value' section, this is where we've stored the text.
+
+    // So how do we actually save that to LocalStorage?
+    // It's actually pretty easy.
+    // So when we populate our list ('populateList'), what we also need to do is to SET the 'items' array into LocalStorage (see above after the 'populateList' function).
+
+    // ============================
+
+    // Create a function that actually creates the HTML once an item is submitted.
+    // And this function needs two things. First, it needs a list of plates (i.e. items) to populate (which we've stored in our 'items' array).
+    // And we need to pass in what that's going to be called. And we can call it anything - we'll call it 'plates'.
+    // And we're going to set that to be a default of an empty object (plates = {}). And that's because, if for some reason, we forget to pass in something,
+    // it's not going to break the JavaScript. It's just going to loop over an array of nothing. And then our 'map' function will work fine.
+
+    // And the second thing we need to pass in is the place to put the HTML, which we'll call 'platesList'.
+    // And we are going to pass in our 'itemsList'.
+
+    function populateList(plates = {}, platesList) {
+      // Map over 'plates' array (the one we passed in).
+      // And we need the index ('i') - see below in <li> --> 'data-index=${i}'.
+      // We then need to stick this in a variable, or directly into the HTML ('innerHTML'), which is what we'll do.
+
+      platesList.innerHTML = plates.map((plate, i) => {
+
+        // Return the HTML.
+        // So we're going to loop over every single item in our array (which remember, is an object),
+        // and we're going to MAP. A MAP takes in an array of raw data, and return an array of some other data.
+        // In our case, we're going to take in the object ('plate'), and return a string (which is we we use back ticks - see '.join' below).
+
+        // Down in <input> and <label>, we use 'item${i}' in both places - the two are linked (the 'id' and 'for' are exactly the same thing):
+        // When you click on the <label>, the <input> will check itself.
+
+        // We need to know whether or not these items are checked or not, because when we re-render it,
+        // if it's already checked, if it has a 'done' status, then we need to put the 'check' attribute.
+        // So if the item has a propery of 'done', then put the 'check' attribute; otherwise, leave it off.
+        // So we need to create a ternary operator here in the <input> --> plate.done ? 'checked' : ''
+        return `
+        <li>
+          <input type="checkbox" data-index=${i} id="item${i}" ${plate.done ? 'checked' : ''}/>
+          <label for="item${i}">${plate.text}</label>
+        </li>
+        `;
+
+        // Lastly, we use '.join'. That's because MAP is going to return an array (we used MAP above),
+        // when really, if we're setting 'innerHTML' (see above), we just need one big string.
+        // So '.join('')' is going to take the array that MAP makes, and turn it into a string.
+      }).join('');
+    }
+
+    // Next, we need to persist the toggling of the checkmark.
+    // So we need to create a new function (toggleDone).
+    // And then, pass in the event.
+    // So when will this function run?
+
+    // EVENT DELEGATION
+    // EVENT DELEGATION is where we listen for a click on something higher,
+    // and then inside of it, we check if it's the actual thing that we want (because it can trigger on a few different things).
+
+    // The problem we can run into is, because the checkmark inputs are created AFTER we listen for them,
+    // they don't have event listeners attached to them.
+    // The whole idea behind EVENT DELEGATION is, rather than listening for a 'click' or 'change' on these checkboxes DIRECTLY,
+    // what we do is we look for 'somebody' who is going to be on the page at the time of listening.
+    // If we check the console, we can see that the <ul> that holds everything - that DOES exist.
+    // So what we're going to do, is we're going to listen for a click on the 'plates', and then we're going to figure out,
+    // did they actually need to click one of the inputs inside of it.
+
+    // So you can think of EVENT DELEGATION as very 'responsible parents' (like <ul> with a class of  'plates'),
+    // and very negligent children, who don't necessarily hear any instructions from the parents.
+    // So what we're saying is, "Hey plates, when your children inputs get clicked, can you please pass this click on to them?
+    // Rather than you handling the click directly, we're just telling you because you're the only one responsible here.
+    // So that when someone clicks it, if it's for one of your children, make sure you tell them to handle this click."
+    // So, with EVENT DELEGATION, you can think of it like a responsible parent, and then a negligent child who doesn't necessarily know what to do with the click.
+    // So the parent has to tell it what to do.
+
+    // So, we are going to listen for the click on the UNORDERED LIST (<ul>), which is the 'itemsList'.
+    // And when that click happens, we're going to call 'toggleDone' (see below, a few lines down) --> itemsList.addEventListener('click', toggleDone);
+    function toggleDone(e) {
+      // Check to see if the target matches the thing that we're looking for.
+      // So now wherever we click, we only get <input> checks, which is what we want.
+      if (!e.target.matches('input')) return; // skip this unless it's an input
+
+      // console.log(e.target);
+
+      // Find the item that was checked, and set 'done' to 'true' or 'false', depending on what state it's in.
+      // First, get the index (this is why we gave each input a 'data-index' value - so we can use it to reference where it is in the array).
+      const el = e.target;
+
+      // With this console.log, when you click on an item, it's going to give you the index of the corresponding item in the array in the console.
+      // And then from that, we'l put that index in it's own variable:
+      // console.log(el.dataset.index);
+      const index = el.dataset.index;
+
+      // Take our 'items' with the 'index', and access the 'done' property, and set it to itself, BUT the opposite ('!').
+      // So if this is 'true', it's going to be the opposite, which is false; and vice versa.
+      items[index].done = !items[index].done;
+
+      // Store it in LocalStorage
+      localStorage.setItem('items', JSON.stringify(items));
+
+      // Call 'populateLists'.
+      // Update the UI. 
+      populateList(items, itemsList);
+
+    }
+
+
+    // Listen for submit event. Why do we listen for the 'submit' event? Because that's what we actually need.
+    // A lot of times, people listen for a 'click' on this button,
+    // BUT you want to listen for a 'submit' when someone hits <ENTER>, clicks the button, when something external submits it.
+    // We need to make sure we're covering all our bases.
+    // That's why we listen to the 'submit' event, rather than 'click'.
+    addItems.addEventListener('submit', addItem);
+    itemsList.addEventListener('click', toggleDone);
+
+    // Populate items on page load.
+    // Remember that 'items' does not exist on page load - up above, the first thing is that 'items' is empty --> 'const items = []'.
+    // So we cannot just do 'populateList(items)' here.
+    // So what we can do is, up above when we declare 'items', instead of 'const items = []',
+    // we'll do: const items = JSON.parse(localStorage.getItem('items')) || [];
+    // That way, it will try to get it from LocalStorage, and then, if it isn't there, it's going to fall back into an empty array ([]).
+
+    // So, populate items on page load.
+
+    // So to review: When we add an item, we put it into local storage, and you update your LocalStorage every single time:
+    // localStorage.setItem('items', JSON.stringify(items)) (SEE ABOVE).
+    // And then on page load, we check if there is something in LocalStorage, and then of there's nothing there,
+    // we fall back to an empty array:
+    // JSON.parse(localStorage.getItem('items')) \ [] (SEE ABOVE)
+
+
+    populateList(items, itemsList);
+
+  </script>
 
 
 </body>
-</html>
 
+</html>
