@@ -1,40 +1,142 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Mouse Shadow</title>
 </head>
+
 <body>
 
   <div class="hero">
-    <h1 contenteditable>🔥WOAH!</h1>
+    <!-- <h1 contenteditable>🔥WOAH!</h1> -->
+    <h1 contenteditable>🚀ADOLF</h1>
   </div>
 
   <style>
-  html {
-    color: black;
-    font-family: sans-serif;
-  }
+    html {
+      color: black;
+      font-family: sans-serif;
+    }
 
-  body {
-    margin: 0;
-  }
+    body {
+      margin: 0;
+    }
 
-  .hero {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: black;
-  }
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: black;
+    }
 
-  h1 {
-    text-shadow: 10px 10px 0 rgba(0,0,0,1);
-    font-size: 100px;
-  }
+    h1 {
+      text-shadow: 10px 10px 0 rgba(0, 0, 0, 1);
+      font-size: 100px;
+    }
   </style>
 
-<script>
-</script>
+  <script>
+
+    // Listen for a mousemove event on our hero
+    const hero = document.querySelector('.hero');
+    // Text inside hero
+    const text = hero.querySelector('h1');
+
+    const walk = 150; // 100px - this will be used in our math equation (see below)
+
+    function shadow(e) {
+      // Anytime we mouseover, we will get all this information in the console
+      // console.log(e);
+
+      // Get the width and height of the hero
+      // regular way:
+      // const width = hero.offsetWidth;
+      // const height = hero.offsetHeight;
+
+      // Destructuring:
+      const { offsetWidth: width, offsetHeight: height } = hero;
+
+      // Get information about where cursor was.
+      // Destructuring:
+      let { offsetX: x, offsetY: y } = e;
+
+      // When you check in the console, you'll get the x and y as you move the mouse around
+      console.log(x, y);
+      // But if you hover right in the top corner of the h1 tag, the numbers are close to 0, which is weird.
+      // And what's happening is that the event, even though we're listening for the mousemove on the hero,
+      // if there are children elements inside of the hero, it's going to give us the x and the y of the actual element that we hover over, which is kind of a pain.
+
+      // So we need to do a little bit of normalization here to say, "Okay, if the thing that we're actually hovering over is the h1, instead of the hero,
+      // then modify the x and the y values, so that they're going to be consistent across all of them."
+      // So we'll use an if statement for this ('this' is a div with the class of 'hero').
+      // And the 'target' is the thing that it actually triggered on, whereas 'this' is going to be the thing that you listen on.
+      // So it's always going to be 'hero' for this. But the 'target' (what it got triggered on), will sometimes change.
+
+      // So if these two things are NOT the same ('this' and 'e.target'), then:
+      // x = x + e.target.offsetLeft;
+      // y = y + e.target.offsetTop;
+
+      // So basically, if someone hovers in the top left hand corner of the h1,
+      // we're just going to add the like 2 pixels that it's given us, plus whatever it is from the left, and whatever it is from the top.
+
+      // console.log(this, e.target);
+      if (this !== e.target) {
+        x = x + e.target.offsetLeft;
+        y = y + e.target.offsetTop;
+      }
+
+      // Now when we hover over the h1, the values are not weird and back to 0, so our if statement fixed that issue.
+      // console.log(x, y);
+
+      // Now we need to figure out how far the text shadow should actually go.
+      // We need something I like to call a 'walk'.
+      // So if the cursor is all the way to the top left, how much over and back should it go?
+      // If it's all the way over, how much over should it go? How much all the way down should it go?
+      // I like to call that the 'walk'.
+      // So, how many pixels at its most should it be stretched?
+      // So let's declare a variable called 'walk' and make it 100 pixels (see above).
+
+      // Here is where it gets a little bit tricky.
+      // If the cursor was all the way over in the bottom right corner, it's not going to be 200 px; it's going to be +100.
+      // And when it's all the way in the top left, it's not going to be 0; it's going to be negative.
+
+      // So what this equation is: if 100 is the highest it will go, 0 is not the lowest we'll go.
+      // If 100 is our 'walk' (see above where 'walk' is declared), then 50 should be as high as we go,
+      // and -50 should be as low as we go.
+      // So our 'walk' is 100, so we want to go from 50 to -50.
+      // And that's what these equations are doing, sort of offsetting it, so we go to 50 and -50 instead of 0, 100:
+      const xWalk = Math.round((x / width * walk) - (walk / 2));
+      const yWalk = Math.round((y / height * walk) - (walk / 2));
+
+      // Now when we move the mouse around and check the console, we get a bunch of pixel values.
+      // And the numbers are a little bit long (e.g. 5.781250000000007),
+      // so we could do a 'Math.round' around them (see equations above).
+      // And now if we go to the top left, we get -50 -50.
+      // And if you go to the bottom right, we get 50 50.
+      // Great.
+      console.log(xWalk, yWalk);
+
+      // So now, all that's left for us is we take our text, and we can use the 'style' attribute, and set the text shadow.
+      // It looks like this, but we're going to use 'xWalk' and 'yWalk'.
+      // And when we check the dev tools (Elements tab), we can see the values are updated as we move around.
+      // text.style.textShadow = `10px 10px 0 red`;
+      // text.style.textShadow = `${xWalk}px ${yWalk}px 0 red`;
+
+      // And we could also do multiple colors by just adding a comma after each 'textShadow' style and adding another,
+      // and have them go in different directions as well (note: xWalk * -1, etc.):
+      text.style.textShadow = `
+      ${xWalk}px ${yWalk}px 0 rgba(255,0,255,0.7),
+      ${xWalk * -1}px ${yWalk}px 0 rgba(0,255,255,0.7),
+      ${yWalk}px ${xWalk * -1}px 0 rgba(0,255,0,0.7),
+      ${yWalk * -1}px ${xWalk}px 0 rgba(0,0,255,0.7)
+    `;
+
+    }
+    // When the mouse moves, we're going to run the function 'shadow'
+    hero.addEventListener('mousemove', shadow);
+  </script>
 </body>
+
 </html>
