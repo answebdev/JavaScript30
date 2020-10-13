@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Sort Without Articles</title>
 </head>
+
 <body>
+
+  <!-- Using the 'array.sort' method.
+  Sorting band names without the articles (a, an, the) in front of the band name.
+
+  STEPS
+  1. Sort them without articles
+  2. Put them into the HTML WITH the articles (even though they were sorted without the articles. -->
 
   <style>
     body {
@@ -26,12 +35,12 @@
       padding: 0;
       box-shadow: 0 0 0 20px rgba(0, 0, 0, 0.05);
     }
-    
+
     #bands li {
       border-bottom: 1px solid #efefef;
       padding: 20px;
     }
-    
+
     #bands li:last-child {
       border-bottom: 0;
     }
@@ -40,16 +49,59 @@
       color: #ffc600;
       text-decoration: none;
     }
-
   </style>
 
   <ul id="bands"></ul>
 
-<script>
-const bands = ['The Plot in You', 'The Devil Wears Prada', 'Pierce the Veil', 'Norma Jean', 'The Bled', 'Say Anything', 'The Midway State', 'We Came as Romans', 'Counterparts', 'Oh, Sleeper', 'A Skylit Drive', 'Anywhere But Here', 'An Old Dog'];
+  <script>
+    const bands = ['The Plot in You', 'The Devil Wears Prada', 'Pierce the Veil', 'Norma Jean', 'The Bled', 'Say Anything', 'The Midway State', 'We Came as Romans', 'Counterparts', 'Oh, Sleeper', 'A Skylit Drive', 'Anywhere But Here', 'An Old Dog'];
+
+    // This function takes in the band name. And then from there, we're going to return the band name,
+    // but we're going to replace the words 'a', 'an', 'the'.
+    // And one way we can replace all three articles at the same time is ti use a REGULAR EXPRESSION: /^(a |the |an )/i
+    // And so we're going to be replacing the articles with nothing ('').
+    // And then we call 'trim' at the end, in case we have any spaces after it.
+    function strip(bandName) {
+      return bandName.replace(/^(a |the |an )/i, '').trim();
+    }
+
+    const sortedBands = bands.sort(function (a, b) {
+      // You can also do an operation like 'a > b' with strings because, even though strings are not numbers,
+      // it's still going to work because strings are alphabetical.
+      // if (a > b) {
+
+      // Simpler version with Ternary Operator
+      return strip(a) > strip(b) ? 1 : -1;
+    });
+
+    // Original version -----------
+    // if (strip(a) > strip(b)) {
+    //   return 1;
+    // } else {
+    //   return -1;
+    // }
+    // ----------------------------
 
 
-</script>
+    // In the console, we should now see them sorted alphabetically, though it's alphabetical based on the articles.
+    // So, we need to create a new function... (called 'strip') (See above).
+    console.log(sortedBands);
+
+    // Render bands in the HTML.
+    // Grab 'bands' ID from HTML.
+    // Loop over the sorted bands using MAP.
+    // And from that MAP, return the band in a list item (<li>).
+    // And since this returns an array (the 'sortedBands' array), we want to 'join' it.
+
+    // When you try to set something to 'innerHTML' that is NOT a string, like an array,
+    // then it will just call '.toString' on it, and by default, it's going to put a comma in between each one.
+    // That's why we use '.join' at the end here, so that it will JOIN it into one BIG string,
+    // rather than a bunch of strings with commas in between.
+    document.querySelector('#bands').innerHTML = sortedBands.map(band => `<li>${band}</li>`).join('');
+
+
+  </script>
 
 </body>
+
 </html>
