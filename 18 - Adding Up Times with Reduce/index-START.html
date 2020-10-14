@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Videos</title>
 </head>
+
 <body>
   <ul class="videos">
     <li data-time="5:43">
@@ -181,7 +183,89 @@
       Video 58
     </li>
   </ul>
-<script>
-</script>
+  <script>
+
+    // We want to add up the total number of hours, minutes, and seconds;
+    // for example, adding up timestamps of all your videos on YouTube.
+
+    // So, how do we pull the timestamps out of the DOM (e.g. on YouTube), convert them to numbers,
+    // Make them into minutes and seconds, add them all up and figure out how many hours, minutes, and seconds there are total,
+    // and then finally, console.log those values.
+
+    // That's what we're going to be doing here.
+
+    // We will be using REDUCE here.
+
+
+    // Select all of the Nodes.
+    // And we're not going to just look at the <li>, because they might not all be <li>.
+    // But we're going to use the 'data-time' attribute on it.
+    // const timeNodes = document.querySelectorAll('[data-time]');
+    // console.log(timeNodes);
+
+    // We want to change it from a Node List into an array of time strings.
+    // We cannot use MAO because 'timeNodes' is not an array; it's a Node List.
+    // So to make things easier, let's convert 'timeNodes' into an array, using 'Array.from'.
+
+    const timeNodes = Array.from(document.querySelectorAll('[data-time]'));
+    // console.log(timeNodes);
+
+    // So we went from an array of <li>s and into an array of strings.
+    // And now we get our 'seconds' variable, which is going to be an array.
+
+    // In the console, we now get an array with the times: "5:43", "2:33",...
+    // But now we want to change this into seconds:
+    // '.map(timeCode)'...
+    // Then we need to 'split' it, because if we have a string like this ("5:43"),
+    // we want to break that into minutes and seconds. So, we want to split "5:43" to be ["5", "43"].
+    // So we can use ES6 DESTRUCTURING .> 'const [mins, secs] = timeCode.split(':')'
+    // And now we'll have the minutes and seconds into their own variables.
+
+    // However, now they are strings (that's what it means when the numbers are BLACK in the console).
+    // And since we want to do some math ('return (mins * 60) + secs'), they need to be numbers.
+    // So, what we can do is MAP over that array, and pass it 'parseFloat' ->
+    // const [mins, secs] = timeCode.split(':').map(parseFloat);
+    // (this will run the 'parseFloat' function against every item in the result array).
+    // And this will return to us an actual array of numbers.
+    // Great. So now we should have an array of seconds.
+
+    // Now we want to add the numbers together.
+    // REDUCE is a really good way to do this.
+    // REDUCE takes IN an array and returns anything you want (e.g. number, string, object).
+    // In our case, we want to take all of these nubmers and reduce them down into one big number.
+    // And now we should get the total number of seconds for every single video added together.
+    const seconds = timeNodes.map(node => node.dataset.time).map(timeCode => {
+      const [mins, secs] = timeCode.split(':').map(parseFloat);
+      return (mins * 60) + secs;
+      // console.log(mins, secs);
+    }).reduce((total, vidSeconds) => {
+      return total + vidSeconds;
+    })
+
+    // Now we want to take the 'seconds' variable and chop it down to hours, minutes, and seconds.
+    // Create a variable ('secondsLeft') that's a running tally of seconds left, because we're going to start chipping away at the hours and minutes.
+    let secondsLeft = seconds;
+
+    // We only care about whole hours, and not something like this: 4.9827777777
+    // The .9 is going to make itself into seconds and minutes.
+    // So we wrap it in 'Math.floor'. And this will give us 4 (i.e. 4 hours), instead of 4.9827777777
+    const hours = Math.floor(secondsLeft / 3600);
+
+    // Using '%', this gives us the seconds left (the remainder) after they are evenly distributed.
+    // So after we chunk it into the hours, we are going to have this many seconds left:
+    secondsLeft = secondsLeft % 3600;
+    console.log(secondsLeft);
+
+    // Do the same for minutes.
+    const mins = Math.floor(secondsLeft / 60);
+    secondsLeft = secondsLeft % 60;
+    // This will give us: 4 58 58 (4 hours, 58 minutes, and 58 seconds).
+    console.log(hours, mins, secondsLeft);
+
+
+
+
+  </script>
 </body>
+
 </html>
