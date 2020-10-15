@@ -1,16 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Get User Media Code Along!</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
+  <!-- Making a photo booth with JavaScript
+
+  Here, our video is being piped in from our webcam, and the we have our video piped into a canvas element.
+  And once it's in a canvas element, we can then start to do all kinds of things with it,
+  like take our photo and then download it.
+
+  And in these scripts, once we add them, we can start to add effects, like different filters, RGB split, play with the alpha, green screen, etc. -->
 
   <div class="photobooth">
     <div class="controls">
       <button onClick="takePhoto()">Take Photo</button>
-<!--       <div class="rgb">
+
+      <!-- Sliders to manipulate colors: -->
+      <div class="rgb">
         <label for="rmin">Red Min:</label>
         <input type="range" min=0 max=255 name="rmin">
         <label for="rmax">Red Max:</label>
@@ -29,8 +41,18 @@
         <input type="range" min=0 max=255 name="bmin">
         <label for="bmax">Blue Max:</label>
         <input type="range" min=0 max=255 name="bmax">
-      </div> -->
+      </div>
     </div>
+
+
+    <!-- The video from our webcam is going to come in, and we're going to pipe that into this <video> element below.
+    And then (maybe every 16 ms or so), we're going to take a snapshot of that video,
+    and dump it into the <canvas> element.
+    Once it's in the <canvas>, we're going to manipulate the pixels, change the color of the filters, etc.
+
+    So, the video is going to come off the webcam on the <video> element, and we're going to dump it into the <canvas> every so often.
+    And then finally, we're going to put all of our images down in the <div> element with the class of "strip". -->
+
 
     <canvas class="photo"></canvas>
     <video class="player"></video>
@@ -39,7 +61,8 @@
 
   <audio class="snap" src="./snap.mp3" hidden></audio>
 
-  <script src="scripts.js"></script>
+  <script src="scripts-FINISHED.js"></script>
 
 </body>
+
 </html>
