@@ -1,19 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Speech Detection</title>
 </head>
+
 <body>
 
+  <!-- Speech recognition in the browser without any libraries or external APIs -->
   <div class="words" contenteditable>
   </div>
 
-<script>
-  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  <script>
+    // 'SpeechRecognition' is a global variable that lives in the browser, and it lives on top of the window.
+    // In Chrome, it's 'webkitSpeechRecognition'. It's currently only available in Firefox.
+
+    // Setting it to be 'SpeechRecognition'.
+    window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    // Create a new instance of 'SpeechRecognition':
+    const recognition = new SpeechRecognition();
+
+    // const recognition = new webkitSpeechRecognition();
+
+    // Take 'recognition' variable and set 'interimResults', and this has to be 'true'.
+    // What this does is, as you are speaking, it populates the field in the browser with your words.
+    // And if you don't do that, you need to stop speaking before it will give you anything.
+    // We want to be able to see what we're saying as we are speaking.
+    recognition.interimResults = true;
+
+    // Create a paragraph.
+    // As we speak, it's updating a new paragraph (<p>) in the browser (see dev tools).
+    // When we stop speaking, it creates a new <p> as if we were saying a new sentence, etc.
+    // And the browser is going to tell us when it's finished processing what we're saying.
+    let p = document.createElement('p');
+
+    // Get the class of 'words'.
+    const words = document.querySelector('.words');
+    words.appendChild(p);
+
+    // Take our 'recognition' and add an event listener, but we don't listen for 'click', we listen for a 'result'.
+    // And when the 'result' comes back, we're going to get an event.
+    recognition.addEventListener('result', e => {
+
+      // This will give us a LIST of results in the console - note, it's a LIST, and not an ARRAY.
+      // If we open up the prototype in the console, we see there is no MAP or forEach (which are for arrays),
+      // and that's going to be a bit of an issue for us.
+      // So we can convert that to an array, or use ES6 'for of' to iterate over it.
+      // And if we open THAT list (it's nested), we can see what we've said under 'transcript'.
+      // It also gives the 'confidence' (e.g. 0.89999 -> 89% confident this is what we said).
+      // And there's an 'isFinal' Boolean, which tells us if the person is done speaking that sentence or not.
+      console.log(e.results);
+
+      // So, take this mess of nested stuff and convert it into a plain string that we can see.
+      // And we'll need to convert it into an array, because it's not an array by default.
+      // Then we're going to MAP over each of them and then turn it from one thing to another.
+
+      // So we're going to MAP over it and take the first thing that we have there ([0] is the first thing that is there).
+      const transcript = Array.from(e.results)
+        .map(result => result[0])
+
+        // MAP over it once more and return the 'result.transcript'.
+        .map(result => result.transcript)
+
+        // Sometimes it logs what we say into separate pieces, so we want to JOIN them, because we don't want separate strings - we just want one big string.
+        .join('')
+
+      console.log(transcript);
+
+      // Add what we say to the browser in a paragraph tag:
+      p.textContent = transcript;
+
+      // Check if the 'results' is final so that we can create a new <p>
+      if (e.results[0].isFinal) {
+        p = document.createElement('p');
+        words.appendChild(p);
+      }
+
+      if (transcript.includes('hello')) {
+        console.log('👋');
+      }
+      // Can hook this up to an external API so that it fetches the weather when you say, 'get the weather'.
+      if (transcript.includes('get the weather')) {
+        console.log('Getting the weather...');
+      }
 
 
-</script>
+    });
+
+    // If you stop speaking, then start again, it doesn't work.
+    // That's because we're listening for the 'result'.
+    // But then, once the result is finished, it unbinds itself - it's no longer listening.
+    // So we need to add a second event listener for the 'end' event.
+    // And then when it ends, we can just call the function.
+    // When it ends, run the function for us ('recognition.start').
+    recognition.addEventListener('end', recognition.start);
+
+    // SERVER
+    // Like the webcam project, we DO have to run this through a SERVER - it has to be LOCALHOST, or something like that.
+    // Do: 'npm install', then when that's done, do 'npm start', and open up the 'index-START.html' file.
+
+    // Make sure to start the 'recognition':
+    // And we don't necessarily want to run it on page load - you might want to prompt the user for permission to use the microphone.
+    recognition.start();
+
+
+
+
+
+
+  </script>
 
 
   <style>
@@ -33,14 +130,14 @@
       margin: 50px auto;
       background: white;
       border-radius: 5px;
-      box-shadow: 10px 10px 0 rgba(0,0,0,0.1);
+      box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
       padding: 1rem 2rem 1rem 5rem;
       background: -webkit-gradient(linear, 0 0, 0 100%, from(#d9eaf3), color-stop(4%, #fff)) 0 4px;
       background-size: 100% 3rem;
       position: relative;
       line-height: 3rem;
     }
-    
+
     p {
       margin: 0 0 3rem;
     }
@@ -58,4 +155,5 @@
   </style>
 
 </body>
+
 </html>
