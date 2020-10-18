@@ -1,33 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>👀👀👀Follow Along Nav</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-    <nav>
-      <ul class="menu">
-        <li><a href="">Home</a></li>
-        <li><a href="">Order Status</a></li>
-        <li><a href="">Tweets</a></li>
-        <li><a href="">Read Our History</a></li>
-        <li><a href="">Contact Us</a></li>
-      </ul>
-    </nav>
+  <nav>
+    <ul class="menu">
+      <li><a href="">Home</a></li>
+      <li><a href="">Order Status</a></li>
+      <li><a href="">Tweets</a></li>
+      <li><a href="">Read Our History</a></li>
+      <li><a href="">Contact Us</a></li>
+    </ul>
+  </nav>
 
-    <div class="wrapper">
-      <p>Lorem ipsum dolor sit amet, <a href="">consectetur</a> adipisicing elit. Est <a href="">explicabo</a> unde natus necessitatibus esse obcaecati distinctio, aut itaque, qui vitae!</p>
-      <p>Aspernatur sapiente quae sint <a href="">soluta</a> modi, atque praesentium laborum pariatur earum <a href="">quaerat</a> cupiditate consequuntur facilis ullam dignissimos, aperiam quam veniam.</p>
-      <p>Cum ipsam quod, incidunt sit ex <a href="">tempore</a> placeat maxime <a href="">corrupti</a> possimus <a href="">veritatis</a> ipsum fugit recusandae est doloremque? Hic, <a href="">quibusdam</a>, nulla.</p>
-      <p>Esse quibusdam, ad, ducimus cupiditate <a href="">nulla</a>, quae magni odit <a href="">totam</a> ut consequatur eveniet sunt quam provident sapiente dicta neque quod.</p>
-      <p>Aliquam <a href="">dicta</a> sequi culpa fugiat <a href="">consequuntur</a> pariatur optio ad minima, maxime <a href="">odio</a>, distinctio magni impedit tempore enim repellendus <a href="">repudiandae</a> quas!</p>
-    </div>
+  <div class="wrapper">
+    <p>Lorem ipsum dolor sit amet, <a href="">consectetur</a> adipisicing elit. Est <a href="">explicabo</a> unde natus
+      necessitatibus esse obcaecati distinctio, aut itaque, qui vitae!</p>
+    <p>Aspernatur sapiente quae sint <a href="">soluta</a> modi, atque praesentium laborum pariatur earum <a
+        href="">quaerat</a> cupiditate consequuntur facilis ullam dignissimos, aperiam quam veniam.</p>
+    <p>Cum ipsam quod, incidunt sit ex <a href="">tempore</a> placeat maxime <a href="">corrupti</a> possimus <a
+        href="">veritatis</a> ipsum fugit recusandae est doloremque? Hic, <a href="">quibusdam</a>, nulla.</p>
+    <p>Esse quibusdam, ad, ducimus cupiditate <a href="">nulla</a>, quae magni odit <a href="">totam</a> ut consequatur
+      eveniet sunt quam provident sapiente dicta neque quod.</p>
+    <p>Aliquam <a href="">dicta</a> sequi culpa fugiat <a href="">consequuntur</a> pariatur optio ad minima, maxime <a
+        href="">odio</a>, distinctio magni impedit tempore enim repellendus <a href="">repudiandae</a> quas!</p>
+  </div>
 
   <script>
     // 👀👀👀👀👀👀👀👀👀👀👀👀👀👀👀
+
+    // Using the 'getBoundingClientRect()' method and applying it to inline styles
+
+    // First thing we need to do is to get all our 'triggers' - things that will be hovered that will need a background behind it.
+    // And we're jut going to do every single link that's on the page.
+    const triggers = document.querySelectorAll('a');
+
+    // Create the highlight.
+    // So, create a <span> and add a class of highlight,
+    // and then put it into the DOM: 'document.body.append(highlight)'
+    const highlight = document.createElement('span');
+    highlight.classList.add('highlight');
+    document.body.append(highlight);
+
+    // Listen for when someone enters into a link.
+    // And we'll listen for a 'mouseenter' event on each (using 'forEach') of our 'triggers'.
+    // When this happens, we're going to run the funtion 'highlightLink'.
+    function highlightLink() {
+      // console.log("Highlight!");
+      console.log(this);
+      // We need to figure out the width, height, the x, and the y.
+      // So we need to figure out how big is the element that we hover over,
+      // and where on the page is that actual element?
+      // We're going to use a method called 'getBoundingClientRect'
+      const linkCoords = this.getBoundingClientRect();
+      // Now when we hover over the links, it gives us all the information about where on the page that element lives.
+      console.log(linkCoords);
+
+      // So it should work now, but at this point, it's off a bit by the amount that we scroll down.
+      // To compensate for that, is to take how far the person has scrolled down,
+      // and then take that away from our actual item.
+      // So in the console, we do 'window.scrollY', then scroll down and re-run that. It's going to give us 67.
+      // That's how far we actually are.
+      // So up above let's make our own coordinates.
+      const coords = {
+        width: linkCoords.width,
+        height: linkCoords.height,
+        top: linkCoords.top + window.scrollY,
+        left: linkCoords.left + window.scrollX
+      };
+
+      // And now that we have those coordinates here ('linkCoords'),
+      // we can simply take our 'highlight' element, and apply the 'style.width'; and then do it with the height too.
+      // Now when you hover over from one to the other, it's dynamically applying the style to it.
+      highlight.style.width = `${coords.width}px`;
+      highlight.style.height = `${coords.height}px`;
+
+      // Animating the right and left values - using the 'transform' property to apply it.
+      // Normally how 'transform' works is we do 'translate' and give it an x and a y.
+      // So it animates itself from 100 100. But we want to make these 100 and 100 dynamic.
+      // So we take 100 and replace it with our variable ('linkCoords').
+      // highlight.style.transform = `translate(100px, 100px)`;
+      highlight.style.transform = `translate(${coords.left}px, ${coords.top}px)`;
+
+    }
+
+    triggers.forEach(a => a.addEventListener('mouseenter', highlightLink));
+
+
   </script>
 </body>
-</html>
 
+</html>
