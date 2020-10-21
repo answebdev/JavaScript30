@@ -1,11 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Understanding JavaScript's Capture</title>
 </head>
+
 <body class="bod">
 
+  <!-- Project about 'addEventListener'.
+  Event Capture, Propagation, Bubbling, and a new property called 'Once'. -->
+
+  <!-- Nested divs: -->
   <div class="one">
     <div class="two">
       <div class="three">
@@ -13,36 +19,131 @@
     </div>
   </div>
 
-<style>
-  html {
-    box-sizing: border-box;
-  }
-  
-  *, *:before, *:after { 
-    box-sizing: inherit; 
-  }
+  <style>
+    html {
+      box-sizing: border-box;
+    }
 
-  div {
-    width: 100%;
-    padding: 100px;
-  }
+    *,
+    *:before,
+    *:after {
+      box-sizing: inherit;
+    }
 
-  .one {
-    background: thistle;
-  }
+    div {
+      width: 100%;
+      padding: 100px;
+    }
 
-  .two {
-    background: mistyrose;
-  }
+    .one {
+      background: thistle;
+    }
 
-  .three {
-    background: coral;
-  }
-</style>
+    .two {
+      background: mistyrose;
+    }
 
-<button></button>
-<script>
+    .three {
+      background: coral;
+    }
+  </style>
 
-</script>
+  <button></button>
+  <script>
+
+    // Listen for a click on all our divs (select all the divs).
+    const divs = document.querySelectorAll('div');
+
+
+    function logText(e) {
+      // STOP PROPAGATION.
+      // So with bubbling up, if you click on the innermost square, it will also trigger an event on the parent, and that parent as well.
+      // However, what you can then do is you can take your event and your function
+      // and do 'e.stopPropagation()'.
+      // And what this will do is say, STOP bubbling this event up - I clicked the one that I actually wanted.
+      // Now if click on the innermost box, we just get 'three' in the console (remember that this is because has been set to the defalut of 'false'
+      // down below in the event listener).
+
+      // Why is that?
+      // This is because the browser starts at the very lowest one, it runs that function, and then we run 'e.stopPropagation()',
+      // which essentially means STOP BUBBLING.
+      // And it will no longer trigger events on the parents on the way up.
+      // And you could even wrap 'e.stopPropagation()' in an if statment if you needed to get the middle square, or something like that.
+
+      e.stopPropagation();
+
+      // Clicking on the outer box will log 'one',
+      // but clicking on the innermost box logs 'three' 'two' 'one'.
+      // console.log(this.classList.value);
+      console.log(this);
+
+      // To see the actual elements themselves. But same:// Clicking on the outer box will log 'one',
+      // but clicking on the innermost box logs 'three' 'two' 'one'.
+      // Why?
+      // Well, even though we clicked in 'three', we also really clicked on 'two' because it wraps around it (remember the divs are nested).
+      // We also clicked on 'one', 'body', the 'html' tag, Google Chrome, our operating system, etc.
+      // It just keeps zooming out and out.
+
+      // This is the concept of BUBBLING, where the browser will figure out what you clicked on,
+      // but it will also trigger clicks, and they'll sort of ripple all the way up.
+
+      // So if we do this ('document.body.addEventListener('click', logText)') and click on the innermost box,
+      // we get: three two one bod (class name assigned to <body>).
+      // So what's happening is that when you do a click, it will ripple all the way up to the top of the document
+      // and trigger clicks on those elements as well.
+      // And if you're listening for a click on multiple nested elements (as we are doing here),
+      // then it's going to trigger on all of those.
+      document.body.addEventListener('click', logText);
+
+      // So, the way that this works in modern browsers, is that the browser will first do something called a CAPTURE,
+      // which means that when you click on an element, it's going to ripple down (it goes from the top down).
+      // And then it CAPTURES all of those events.
+      // And then it starts at the bottom, and then starts doing something called a BUBBLE.
+      // So the CAPTURE, both from top-down (the events haven't fired yet - it just captures where you've clicked, and is storing them).
+      // And then, it will start to bubble up, which means that it's triggering the event as you go up.
+    }
+
+    // Loop over each div and add the 'click' event listener, and when that happens, run 'logText'.
+    // So now if we pass in a third argument - an 'options' object - and set 'capture' to 'true',
+    // what this will then do is when we click, it will log: one two three.
+    // And what's happening is that this 'logText' function is NOT going to get run on the bubble up,
+    // It's going to get run on the capture down.
+    // So this is what CAPTURE means - it will run the function on the way down, rather than on the way up.
+
+    // And by default ,'capture' is 'false'.
+
+    // ONCE
+    // We also have an option called 'once'.
+    // This is new in the browser.
+    // And if we set this to 'true', what will happen is it will listen for a 'click',
+    // and then unbind itself.
+    // Unbinding itself is the same thing as saying: 'div.removeEventListener('click', logText)'.
+    // So it will listen for a click once, and then unbind itself so that there's no future clicks on it.
+    // And now if we click on one of our boxes, and click as many times as we can,
+    // it ran once - it fired all those events - but it will never run again until we rerun the page.
+
+    // So that could be helpful if you have a button, and you only ever wanted somebody to click that button once.
+    // And if we add the third option of 'once' and set it to 'true',
+    // we should only be able to click the button once, and never again.
+
+    // button.addEventListener('click', () => {
+    // console.log('Click!');
+    // }, {
+    //  once: true
+    // })
+
+    // And where we would use this specifically would be in store checkouts, where you do not want for someone to click that button
+    // more than once. So you can unbind it and stop them from clicking it multiple times.
+
+
+    divs.forEach(div => div.addEventListener('click', logText, {
+      capture: false,
+      once: true
+    }));
+
+
+
+  </script>
 </body>
+
 </html>
