@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Click and Drag</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <div class="items">
     <div class="item item1">01</div>
@@ -34,8 +36,121 @@
     <div class="item item25">25</div>
   </div>
 
-<script>
-</script>
+  <!-- How to do Click and Drag from scratch.
+  When you click, drag your mouse, and go somewhere, you want the item you clicked on to come along with it. -->
 
-  </body>
+  <script>
+    // Select the "items" div; then we're going to be listening for a number of different events.
+    // So, when we first click down, we're going to add a class of 'active',
+    // and we're goingt to figure out WHERE we clicked down.
+    // Then we we move our mouse either to the left or right, we need to figure out how many pixels we need to scroll in either direction.
+    // So, depending on how far either way we scroll, that's how much we're going to be scrolling the div.
+    // So it's just a combination of mousedown, mouseleave, mouseup, and mousemove.
+
+    // Grab the slider:
+    const slider = document.querySelector('.items');
+
+    // Our flag variable that's going to be true or false depending on if we're clicking or not.
+    let isDown = false;
+
+    // No values assigned to these variables, because that's going to be happening in our events.
+    let startX;
+    let scrollLeft;
+
+    // Attach the listeners (mousedown, mouseleave, mouseup, and mousemove).
+
+    // When someone mouses down, take 'isDown' variable and set it to 'true'
+
+    // When we click and drag, say 20px to the left/right, we need to know where that anchor point is when we scroll to the left or right,
+    // because as many times as we move around, until we mouseup,
+    // we need to know where that intial click down was.
+    // And that's what the 'startX' variable is for (see above).
+    // So when someone clicks down, before they start moving to the left or right,
+    // we need to record where they did that intial click down.
+    // And that's going to happen here in our 'mousedown'.
+    slider.addEventListener('mousedown', (e) => {
+      isDown = true;
+      slider.classList.add('active');
+
+      // If we pass in the event and check the console, one way to tell where we clicked,
+      // is to do: 'console.log(epageX)'.
+      // And then it's going to tell us exactly where we clicked. It's going to give us the X coordinate: a number in the console.
+      // console.log(e.pageX);
+
+      // But if there were a margin in between the page and the item that we click on, then this number would be off.
+      // So we'll need to do 'startX = e.pageX - slider.offsetLeft'.
+      // And this will handle this offset for us:
+      startX = e.pageX - slider.offsetLeft;
+      // console.log(startX);
+
+      // The other thing we need to log at the time of click is the scroll,
+      // because let's say we scroll 200px in, and we want to scroll to the left or right of the div,
+      // then we need to figure out where the intial scroll was when we stared it.
+      // And that's what the 'scrollLeft' variable is for (see above).
+      scrollLeft = slider.scrollLeft;
+    });
+
+    // When someone leaves the 'items' div, it shouldn't work, so set 'isDown' to 'false'.
+    slider.addEventListener('mouseleave', () => {
+      isDown = false;
+      slider.classList.remove('active');
+    });
+
+    // When someone mouses up, set 'isDown' to 'false'.
+    slider.addEventListener('mouseup', () => {
+      isDown = false;
+      slider.classList.remove('active');
+    });
+
+    // All the magic happens here.
+    slider.addEventListener('mousemove', (e) => {
+      // Stop the function from running if the mouse is not down.
+      if (!isDown) return;
+      // console.log(isDown);
+      // console.count(isDown);
+      // console.log("Do work!")
+      // console.log(startX);
+
+      // This will stop any selecting of text that's inside, or any other stuff that the browser thinks you're trying to select.
+      e.preventDefault();
+
+      // Figure out where the cursor is when it's moved.
+      // We already know where the cursor is when a user initially clicks down.
+      // But we want to know where the cursor is when someone moves it to the left or right.
+
+      // We this line, we're going to recalculate every single time we move the mouse.
+      const x = e.pageX - slider.offsetLeft;
+
+      // TIP: Putting the variables in an object (using {}) will enable you to see the value.
+      // So when we click and move around, we can see that the X value ('x') is changing,
+      // and the 'startX' is not. changing at all.
+
+      // So we can take that and call that the 'walk' -> '  const walk = x - startX'.
+      // And this is going to tell us how far we deviated from that initial space.
+      // console.log({ x, startX });
+
+      const walk = (x - startX);
+
+      // If it doesn't scroll enough to your liking when you click and drag, you can multiply this by a number (e.g.),
+      // and then when you scroll, it will scroll more at once.
+      // So for every pixel moved, the slider is going to scroll 3 pixels (or whatever number you multiply by):
+      // const walk = (x - startX) * 3;
+
+      // So what we will see is when we click and drag 20px to the right, we should see '20',
+      // and then go back to our initial point, and then go 20px to the left, we should see '-20'.
+      // So it's telling us how far we've deviated from our initial point.
+      console.log(walk);
+
+      // Change the div so that it actually scrolls - do that with the 'scrollLeft' property.
+      // Now we should be able to click and drag back and forth.
+      slider.scrollLeft = scrollLeft - walk;
+    });
+
+
+
+
+  </script>
+
+</body>
+
 </html>
