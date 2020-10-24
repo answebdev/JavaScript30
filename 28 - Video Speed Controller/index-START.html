@@ -1,20 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Video Speed Scrubber</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
+  <!-- Working with mousemove events and HTML5 video.
+
+  Experimenting with an input that controls how fast a video plays, so that rather than having to click up and down to change the video speed,
+  you can change it with the input as you're watching the video, that that it goes slower and faster.
+  The lowest is going to be 0.4x, and the highest is going to be 4x. -->
+
   <div class="wrapper">
-    <video class="flex" width="765" height="430" src="http://clips.vorwaerts-gmbh.de/VfE_html5.mp4" loop controls></video>
+    <!-- <video class="flex" width="765" height="430" src="http://clips.vorwaerts-gmbh.de/VfE_html5.mp4" loop
+      controls></video> -->
+    <video class="flex" width="765" height="430"
+      src="https://ia800700.us.archive.org/18/items/WhosOnFirstAbbottAndCostello/Abbott-And-Costello-Whos-On-First-HDwww.savevid.com.ogv"
+      loop controls></video>
     <div class="speed">
       <div class="speed-bar">1×</div>
     </div>
   </div>
 
-<script>
-</script>
+  <script>
+
+    const speed = document.querySelector('.speed');
+    const bar = speed.querySelector('.speed-bar');
+    const video = document.querySelector('.flex');
+
+    // Pick our speed and add the 'mousemove' event listener.
+    speed.addEventListener('mousemove', function (e) {
+
+      // When you mouse over the speed input, you will see all the different events that we have going in it.
+      console.log(e);
+
+      // Get the pixels for the settings in the input (as you mouse over the different places on the speed input using console.log(e),
+      // you get different pixels).
+      // We need to offset it because we can't assume the input bar is going to be at the top - there might be padding, margin, another element in between it, etc.
+      const y = e.pageY - this.offsetTop;
+
+      // Doing 'console.log(y)' below, now when we hover over at the very top, we get 0 for Y, and around 410 at the very bottom.
+      // So this is showing us how far along we are.
+      // And we want to turn this into a percentage.
+      const percent = y / this.offsetHeight;
+      // console.log(y);
+      console.log(percent);
+
+      // We also need a min and a max, because we want the minimum speed in the input to be 0.4x, and tha maximum speed to be 4x (or whatever you want the max to be).
+      const min = 0.4;
+      const max = 4;
+
+      // Set 'height' variable (the percentage is currently in the form, 0.999. We want to turn that into 99% - multiply it by 100, then wrap it in 'Math.round').
+      const height = Math.round(percent * 100) + '%';
+      // console.log(height);
+
+      // Take the speed bar, and change the color in the UI depending on what speed you are at on the speed bar.
+      bar.style.height = height;
+
+      // Update the number on the input bar to represent the actual speed.
+      // To do this, we calculate what the playback rate is (remember that our min speed is 0.4, and the max is 4 - it's not min 0 and max 1;
+      // so we need to do some math here).
+      const playbackRate = percent * (max - min) + min;
+      console.log(playbackRate);
+
+      // Add 'toFixed(2)' so that we just get 2 decimal places in the UI.
+      bar.textContent = playbackRate.toFixed(2) + 'x';
+
+      // Take the playback rate, and apply that value to our video.
+      video.playbackRate = playbackRate;
+
+
+    });
+  </script>
 </body>
+
 </html>
