@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Whack A Mole!</title>
   <link href='https://fonts.googleapis.com/css?family=Amatic+SC:400,700' rel='stylesheet' type='text/css'>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
+
+  <!-- The game is 10 seconds long. But each hole the mole pops up in and for how long the mole keeps his head up from the ground is totally random. -->
+
 
   <h1>Whack-a-mole! <span class="score">0</span></h1>
   <button onClick="startGame()">Start!</button>
@@ -32,11 +37,99 @@
     </div>
   </div>
 
-<script>
-  const holes = document.querySelectorAll('.hole');
-  const scoreBoard = document.querySelector('.score');
-  const moles = document.querySelectorAll('.mole');
+  <script>
+    const holes = document.querySelectorAll('.hole');
+    const scoreBoard = document.querySelector('.score');
+    const moles = document.querySelectorAll('.mole');
+    let lastHole;
+    let timeUp = false;
+    let score = 0;
 
-</script>
+    // Function to give us a random amount of time that the mole will pop up (between minimum and maximum).
+    function randomTime(min, max) {
+      return Math.round(Math.random() * (max - min) + min);
+    }
+
+    // Function to pick a random hole for the mole to pop up from. And we pass in a list of holes. In our case, 'const holes = ...',
+    // though it can be any random DOM element.
+    function randomHole(holes) {
+      // Holes is a node list that contains all 6 of our holes.
+      // console.log(holes.length);
+      // So we need to find a random index between 0 and 5.
+      const idx = Math.floor(Math.random() * holes.length);
+      const hole = holes[idx];
+      // console.log(hole);
+      // Since there are only 6 holes, it's possible for the same hole to coe up randomly back-to-back (repeat), and we don't really want this.
+      // We want it to be totally random without repeating the same hole.
+      // So we'll create a variable 'lastHole' (see above), then down below, we'll do 'lastHole = hole'.
+      // And what this will do, is it will save a reference to what hole the mole popped out of last time this function was called.
+      // 'if (hole === lastHole)' = if it's the same hole that previously popped up, then we'll simply run the function again.
+      // And now we should never get the same hole twice in a row.
+      if (hole === lastHole) {
+        console.log('Sorry, you got the same hole.');
+        return randomHole(holes);
+      }
+
+      lastHole = hole;
+      return hole;
+    }
+
+    // Get the moles to pop up.
+    function peep() {
+      const time = randomTime(200, 1000);
+
+      // You could change it to these settings for an advanced level:
+      // const time = randomTime(50, 300);
+
+      const hole = randomHole(holes);
+      // This will give us the hole the mole should pop out of,
+      // and the time for how long it should stay popped up.
+      console.log(time, hole);
+
+      // This will trigger the CSS -> 'top: 0', which animates it to pop up.
+      hole.classList.add('up');
+
+      // After this random amount of time the mole stays popped up,
+      // remove the class of 'up' from the random hole:
+      setTimeout(() => {
+        hole.classList.remove('up');
+
+        if (!timeUp) peep();
+      }, time);
+    }
+
+    // Start the game.
+    function startGame() {
+      scoreBoard.textContent = 0;
+      timeUp = false;
+      score = 0;
+      peep();
+      // Set 'timeUp' variable to 'true' after 10 seconds (remember, the game lasts only 10 seconds).
+      setTimeout(() => timeUp = true, 10000)
+    }
+
+    // Bonk the mole on the head when you click the mole.
+    function bonk(e) {
+      console.log(e);
+      // Make sure that the click is actually from the user, and not a fake click using JavaScript - use 'isTrusted' (you can see this in the console when logging the event).
+      // This is so that someone doesn't try to fake the click without their mouse:
+      if (!e.isTrusted) return;
+      score++;
+      scoreBoard.textContent = score;
+
+      // Remove classList so that mole goes back down in its hole once you hit it:
+      this.classList.remove('up');
+
+
+      // Give a score when someone clicks something
+    }
+
+    // Listen for a click on each of the moles.
+    moles.forEach(mole => mole.addEventListener('click', bonk));
+
+
+
+  </script>
 </body>
+
 </html>
